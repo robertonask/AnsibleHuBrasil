@@ -1,0 +1,6 @@
+---
+- name: Instalação e Configuração Padrão de Servidores CUPS (Debian 11+)
+  hosts: all
+  become: yes
+  roles:
+    - cups

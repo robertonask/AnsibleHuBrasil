@@ -1,0 +1,102 @@
+---
+- name: Atualizar cache de pacotes e instalar o CUPS e dependências
+  apt:
+    name:
+      - cups
+      - cups-pdf
+      - smbclient
+    state: present
+    update_cache: yes
+
+- name: Criar usuário huadmin no grupo lpadmin
+  user:
+    name: huadmin
+    system: yes
+    home: /home/huadmin
+    group: lpadmin
+    shell: /bin/bash
+    state: present
+
+- name: Definir senha do huadmin via chpasswd
+  shell: echo "huadmin:{{ huadmin_pass }}" | chpasswd
+  no_log: true
+
+- name: Criar sudoers para huadmin
+  copy:
+    dest: /etc/sudoers.d/huadmin
+    content: "huadmin ALL=(ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+
+- name: Garantir permissões corretas no diretório home do huadmin
+  file:
+    path: /home/huadmin
+    state: directory
+    owner: huadmin
+    group: lpadmin
+    mode: '0755'
+
+- name: Garantir que o diretório de configuração do CUPS existe
+  file:
+    path: /etc/cups
+    state: directory
+    owner: root
+    group: lp
+    mode: '0755'
+
+- name: Criar arquivo cupsd.conf temporário caso não exista (para modo check -C)
+  file:
+    path: /etc/cups/cupsd.conf
+    state: touch
+    mode: '0644'
+  when: ansible_check_mode
+
+- name: Configurar escuta global/IPs na porta 631 no cupsd.conf
+  lineinfile:
+    path: /etc/cups/cupsd.conf
+    regexp: '^(Listen|Port)\s+'
+    line: 'Listen 0.0.0.0:631'
+    create: yes
+  notify: reiniciar cups
+
+- name: Configurar permissões de acesso externo e administração remota no cupsd.conf
+  blockinfile:
+    path: /etc/cups/cupsd.conf
+    marker: "# {mark} ANSIBLE MANAGED CUPS ACCESS POLICY"
+    block: |
+      # Permitir acesso geral de qualquer IP da rede local/externa configurada
+      <Location />
+        Order allow,deny
+        Allow @LOCAL
+        Allow 10.0.0.0/8     # Ajuste conforme a sua faixa de IP corporativa se necessário
+        Allow 172.16.0.0/12  # Ajuste conforme necessário
+        Allow 192.168.0.0/16 # Ajuste conforme necessário
+      </Location>
+
+      # Permitir visualização e gerenciamento de impressoras via rede
+      <Location /admin>
+        AuthType Default
+        Require user @SYSTEM
+        Order allow,deny
+        Allow @LOCAL
+        Allow 10.0.0.0/8
+        Allow 172.16.0.0/12
+        Allow 192.168.0.0/16
+      </Location>
+
+      # Permitir alteração de arquivos de configuração remotamente se necessário
+      <Location /admin/conf>
+        AuthType Default
+        Require user @SYSTEM
+        Order allow,deny
+        Allow @LOCAL
+        Allow 10.0.0.0/8
+      </Location>
+  notify: reiniciar cups
+
+- name: Iniciar e habilitar o serviço cups
+  service:
+    name: cups
+    state: started
+    enabled: yes

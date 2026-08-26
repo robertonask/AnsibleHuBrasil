@@ -1,0 +1,19 @@
+# Arquivos temporários
+*.tmp
+*.retry
+*.log
+
+# Arquivos de inventário com senhas
+inventories/*/hosts
+inventories/*/group_vars/*/vault.yml
+
+# Diretórios Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Arquivos de editor
+.vscode/
+.idea/
+*.swp

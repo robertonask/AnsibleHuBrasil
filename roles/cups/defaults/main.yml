@@ -1,0 +1,6 @@
+# Senha padrão inicial para o usuário huadmin (pode ser sobrescrita no group_vars/host_vars ou vault)
+huadmin_pass: "TrocarSenha123!"
+
+# Configurações do CUPS
+cups_listen_address: "* 631" # Permite escutar em todas as interfaces na porta 631
+cups_browsing: "No"
