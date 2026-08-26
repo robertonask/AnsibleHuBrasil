@@ -1,0 +1,83 @@
+- name: Atualizar Wazuh Agent no Debian
+  hosts: all
+  become: true
+  vars:
+    wazuh_new_version: "4.11.1-1"
+    deb_package_url: "https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent/wazuh-agent_{{ wazuh_new_version }}_amd64.deb"
+    local_deb_path: "/tmp/wazuh-agent_{{ wazuh_new_version }}_amd64.deb"
+    relatorio_dir: "/home/rnask/Trab/Ansible/ansible/playbooks/relatorios"
+
+  tasks:
+    - name: Bloco de execução com captura de status
+      block:
+        - name: Validar se a distribuição é Debian
+          ansible.builtin.fail:
+            msg: "Este playbook suporta apenas o Debian."
+          when: ansible_os_family != "Debian"
+
+        - name: Validar a versão do Debian (11, 12 ou 13)
+          ansible.builtin.fail:
+            msg: "Versão do Debian ({{ ansible_distribution_major_version }}) não homologada."
+          when: ansible_distribution_major_version | int not in [11, 12, 13]
+
+        - name: Verificar se o Wazuh Agent já está instalado
+          ansible.builtin.package_facts:
+            manager: apt
+
+        - name: Validar se o pacote existe antes de atualizar
+          ansible.builtin.fail:
+            msg: "O Wazuh Agent não está instalado neste host. Use o playbook de instalação."
+          when: "'wazuh-agent' not in ansible_facts.packages"
+
+        - name: Baixar o pacote .deb da nova versão do Wazuh Agent
+          ansible.builtin.get_url:
+            url: "{{ deb_package_url }}"
+            dest: "{{ local_deb_path }}"
+            mode: '0644'
+
+        - name: Atualizar o pacote do Wazuh Agent
+          ansible.builtin.apt:
+            deb: "{{ local_deb_path }}"
+
+        - name: Garantir que o daemon do systemd foi recarregado e o serviço reiniciado
+          ansible.builtin.systemd:
+            name: wazuh-agent
+            daemon_reload: true
+            enabled: true
+            state: restarted
+
+        - name: Remover o pacote temporário baixado
+          ansible.builtin.file:
+            path: "{{ local_deb_path }}"
+            state: absent
+
+        - name: Definir status de sucesso para o host
+          ansible.builtin.set_fact:
+            wazuh_status: "SUCESSO"
+            wazuh_msg: "Atualizado para a versão {{ wazuh_new_version }} e reiniciado com sucesso."
+
+      rescue:
+        - name: Definir status de falha para o host
+          ansible.builtin.set_fact:
+            wazuh_status: "FALHA"
+            wazuh_msg: "{{ ansible_failed_result.msg | default('Erro desconhecido na task de atualização') }}"
+
+- name: Geração do Relatório Unificado de Atualização
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    relatorio_dir: "/home/rnask/Trab/Ansible/ansible/playbooks/relatorios"
+  tasks:
+    - name: Garantir que o diretório de relatórios existe localmente
+      ansible.builtin.file:
+        path: "{{ relatorio_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Gerar arquivo de relatório unificado com data e hora
+      ansible.builtin.template:
+        src: "../templates/relatorio_wazuh.j2"
+        dest: "{{ relatorio_dir }}/resultado_atualizacao_wazuh_{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}.txt"
+        mode: '0644'
+

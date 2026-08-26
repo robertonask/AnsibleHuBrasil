@@ -1,0 +1,81 @@
+- name: Configurar repositório EBSERH
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Definir se é legado
+      set_fact:
+        legacy: "{{ ansible_distribution_major_version | int <= 10 }}"
+
+    # 🔴 LEGADO
+    - name: Adicionar chave legado
+      shell: wget -qO- {{ repo_url }}/ebserh.gpg | apt-key add -
+      when: legacy
+      register: resultado_legado
+
+    - name: Criar repo legado
+      copy:
+        dest: /etc/apt/sources.list.d/ebserh.list
+        content: |
+          deb {{ repo_url }} {{ ansible_distribution_release }} main contrib
+      when: legacy
+      register: resultado_legado_repo
+
+    # 🟢 MODERNO
+    - name: Baixar chave moderna
+      get_url:
+        url: "{{ repo_url }}/ebserh.gpg"
+        dest: "{{ keyring_path }}"
+        mode: '0644'
+      when: not legacy
+      register: resultado_moderno_gpg
+
+    - name: Criar repo moderno
+      copy:
+        dest: /etc/apt/sources.list.d/ebserh.list
+        content: |
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }} main contrib non-free non-free-firmware
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }}-updates main contrib non-free non-free-firmware
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }}-security main contrib non-free non-free-firmware
+        mode: '0644'
+      when: not legacy
+      register: resultado_moderno_repo
+
+    # 🧹 LIMPEZA
+    - name: Backup do sources.list
+      copy:
+        src: /etc/apt/sources.list
+        dest: /etc/apt/sources.list.bkp
+        remote_src: yes
+      ignore_errors: yes
+      register: resultado_backup
+
+    - name: Limpar sources.list
+      copy:
+        dest: /etc/apt/sources.list
+        content: ""
+      register: resultado_limpeza
+
+    # 🔄 UPDATE
+    - name: Atualizar apt
+      apt:
+        update_cache: yes
+      register: resultado_update
+
+    # 📝 GERAR RELATÓRIO
+    - name: Escrever relatório das alterações
+      lineinfile:
+        path: "/home/rnask/Trab/Ansible/ansible/relatorios/resultado_repo.txt"
+        line: "{{ ansible_date_time.date }} {{ ansible_date_time.time }} {{ inventory_hostname }} {{ item.name }} {{ item.status }}"
+        create: yes
+      delegate_to: localhost
+      loop:
+        - { name: "chave_legado", status: "{{ resultado_legado.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_legado.changed }}" }
+        - { name: "repo_legado", status: "{{ resultado_legado_repo.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_legado_repo.changed }}" }
+        - { name: "chave_moderna", status: "{{ resultado_moderno_gpg.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_moderno_gpg.changed }}" }
+        - { name: "repo_moderno", status: "{{ resultado_moderno_repo.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_moderno_repo.changed }}" }
+        - { name: "backup_sources", status: "{{ resultado_backup.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_backup.changed }}" }
+        - { name: "limpeza_sources", status: "{{ resultado_limpeza.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_limpeza.changed }}" }
+        - { name: "apt_update", status: "{{ resultado_update.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_update.changed }}" }
+      when: item.changed

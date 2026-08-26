@@ -1,0 +1,79 @@
+---
+- name: Verificar existência do diretório de backup
+  stat:
+    path: "{{ backup_dir }}"
+  register: backup
+
+- name: Abortar caso não exista backup
+  fail:
+    msg: "Backup não encontrado em {{ backup_dir }}"
+  when: not backup.stat.exists
+
+- name: Restaurar certificado
+  copy:
+    src: "{{ backup_dir }}/wildcardaghu.crt"
+    dest: "{{ cert_file }}"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restaurar chave
+  copy:
+    src: "{{ backup_dir }}/wildcardaghu.key"
+    dest: "{{ key_file }}"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Restaurar cadeia
+  copy:
+    src: "{{ backup_dir }}/wildcardaghu.pem"
+    dest: "{{ chain_file }}"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restaurar VirtualHost
+  copy:
+    src: "{{ backup_dir }}/aghu.conf"
+    dest: "{{ apache_vhost }}"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Testar configuração do Apache
+  command: apachectl configtest
+  register: apache_test
+  changed_when: false
+  failed_when: false
+
+- name: Exibir resultado do configtest
+  debug:
+    var: apache_test.stdout
+
+- name: Falhar se configuração for inválida
+  fail:
+    msg: "{{ apache_test.stderr | default(apache_test.stdout) }}"
+  when: apache_test.rc != 0
+
+- name: Reiniciar Apache
+  service:
+    name: "{{ apache_service }}"
+    state: restarted
+
+- name: Validar certificado apresentado pelo Apache
+  shell: |
+    openssl s_client \
+      -connect 127.0.0.1:443 \
+      -servername {{ inventory_hostname | regex_replace('-pvl-apr1','') }}.aghu.ebserh.gov.br \
+      </dev/null 2>/dev/null |
+    openssl x509 -noout -subject -dates -ext subjectAltName
+  register: cert_info
+  changed_when: false
+
+- debug:
+    var: cert_info.stdout

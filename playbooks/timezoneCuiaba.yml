@@ -1,0 +1,25 @@
+---
+- name: Alterar timezone para Cuiabá
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: Instalar tzdata
+      apt:
+        name: tzdata
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+    
+    - name: Configurar timezone para America/Cuiaba
+      timezone:
+        name: America/Cuiaba
+    
+    - name: Verificar nova data/hora
+      command: date
+      register: date_output
+    
+    - name: Exibir resultado
+      debug:
+        msg: "Timezone alterado para Cuiabá. Data/Hora atual: {{ date_output.stdout }}"

@@ -1,0 +1,31 @@
+===============================================================================
+RELATÓRIO DE INSTALAÇÃO DO WAZUH AGENT
+Executado em: 2026-07-30 11:40:56
+===============================================================================
+
+[Host]: hujbb-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huufjf-pvl-pg1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.hubfs
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hubfs
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hujbb
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+

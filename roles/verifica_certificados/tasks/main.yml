@@ -1,0 +1,33 @@
+---
+- name: Verifica existência do certificado
+  stat:
+    path: "{{ certificado }}"
+  register: cert
+
+- name: Obter validade do certificado
+  command:
+    cmd: "openssl x509 -enddate -noout -in {{ certificado }}"
+  register: validade
+  changed_when: false
+  when: cert.stat.exists
+
+- name: Extrair data de validade
+  set_fact:
+    data_validade: "{{ validade.stdout | regex_replace('notAfter=', '') }}"
+  when: cert.stat.exists
+
+- name: Calcular dias restantes
+  shell: |
+    echo $(( ($(date -d "{{ data_validade }}" +%s)-$(date +%s))/86400 ))
+  register: dias
+  changed_when: false
+  when: cert.stat.exists
+
+- name: Salvar informações do certificado
+  set_fact:
+    relatorio_certificado:
+      hostname: "{{ ansible_hostname }}"
+      ip: "{{ ansible_default_ipv4.address }}"
+      validade: "{{ data_validade | default('') }}"
+      dias: "{{ dias.stdout | default('') }}"
+      status: "{{ 'OK' if cert.stat.exists else 'ERRO' }}"

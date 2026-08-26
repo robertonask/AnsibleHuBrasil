@@ -1,0 +1,205 @@
+---
+- name: Configurar página de manutenção do Apache para servidores de apresentação
+  hosts: servidores_apresentacao
+  become: yes
+  vars:
+    manutencao_html_path: "/usr/share/apache2/error/aghu/"
+    manutencao_script_path: "/usr/share/aghu/aghu-jk/scripts/"
+    manutencao_html_file: "em-manutencao.html"
+    manutencao_script_file: "manutencao.sh"
+    manutencao_html_link_path: "/var/www/html/error/aghu/"
+    
+  tasks:
+    - name: Garantir que os diretórios de destino existam
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+        recurse: yes
+      loop:
+        - "{{ manutencao_script_path }}"
+        - "{{ manutencao_html_path }}"
+        - "{{ manutencao_html_link_path }}"
+    
+    - name: Verificar se o arquivo HTML fonte existe
+      ansible.builtin.stat:
+        path: "../files/{{ manutencao_html_file }}"
+      register: html_file_stat
+      delegate_to: localhost
+      run_once: yes
+    
+    - name: Falhar se o arquivo HTML não existir
+      ansible.builtin.fail:
+        msg: "Arquivo ../files/{{ manutencao_html_file }} não encontrado!"
+      when: not html_file_stat.stat.exists
+      run_once: yes
+    
+    - name: Copiar página HTML de manutenção
+      ansible.builtin.copy:
+        src: "../files/{{ manutencao_html_file }}"
+        dest: "{{ manutencao_html_path }}/{{ manutencao_html_file }}"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        backup: yes
+    
+    - name: Copiar script de manutenção
+      ansible.builtin.template:
+        src: "../templates/{{ manutencao_script_file }}.j2"
+        dest: "{{ manutencao_script_path }}/{{ manutencao_script_file }}"
+        owner: root
+        group: root
+        mode: '0755'
+        backup: yes
+    
+    - name: Garantir que o script seja executável
+      ansible.builtin.file:
+        path: "{{ manutencao_script_path }}/{{ manutencao_script_file }}"
+        mode: '0755'
+        state: file
+    
+    - name: Criar arquivo de aliases global para todos os usuários
+      ansible.builtin.copy:
+        content: |
+          # Aliases para manutenção do Apache
+          alias aghu-apache-manutencao-start='sudo {{ manutencao_script_path }}/{{ manutencao_script_file }} start'
+          alias aghu-apache-manutencao-status='sudo {{ manutencao_script_path }}/{{ manutencao_script_file }} status'
+          alias aghu-apache-manutencao-stop='sudo {{ manutencao_script_path }}/{{ manutencao_script_file }} stop'
+        dest: /etc/profile.d/99-manutencao-aliases.sh
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Adicionar aliases ao /etc/bash.bashrc (fallback)
+      ansible.builtin.blockinfile:
+        path: /etc/bash.bashrc
+        block: |
+          # Aliases para manutenção do Apache
+          if [ -f /etc/profile.d/99-manutencao-aliases.sh ]; then
+              . /etc/profile.d/99-manutencao-aliases.sh
+          fi
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - MANUTENCAO APACHE"
+        insertbefore: BOF
+    
+    - name: Adicionar aliases ao /etc/profile (para shells POSIX)
+      ansible.builtin.blockinfile:
+        path: /etc/profile
+        block: |
+          # Aliases para manutenção do Apache
+          if [ -f /etc/profile.d/99-manutencao-aliases.sh ]; then
+              . /etc/profile.d/99-manutencao-aliases.sh
+          fi
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - MANUTENCAO APACHE"
+        create: yes
+    
+    - name: Adicionar aliases ao .bashrc de todos os usuários existentes
+      ansible.builtin.shell: |
+        for user_home in /home/* /root; do
+          if [ -d "$user_home" ]; then
+            bashrc_file="$user_home/.bashrc"
+            if [ -f "$bashrc_file" ]; then
+              if ! grep -q "99-manutencao-aliases.sh" "$bashrc_file"; then
+                echo "" >> "$bashrc_file"
+                echo "# Aliases para manutenção do Apache" >> "$bashrc_file"
+                echo "if [ -f /etc/profile.d/99-manutencao-aliases.sh ]; then" >> "$bashrc_file"
+                echo "    . /etc/profile.d/99-manutencao-aliases.sh" >> "$bashrc_file"
+                echo "fi" >> "$bashrc_file"
+              fi
+            fi
+          fi
+        done
+      args:
+        executable: /bin/bash
+      changed_when: true
+      ignore_errors: yes
+    
+    - name: Verificar se o Apache está configurado para usar página de erro personalizada
+      ansible.builtin.find:
+        paths: /etc/apache2/sites-available/
+        patterns: "*.conf"
+      register: apache_sites
+      when: not ansible_check_mode
+    
+    - name: Configurar ErrorDocument 503 nos sites do Apache
+      ansible.builtin.lineinfile:
+        path: "{{ item.path }}"
+        regexp: '^.*ErrorDocument 503'
+        line: '    ErrorDocument 503 /error/aghu/em-manutencao.html'
+        state: present
+      loop: "{{ apache_sites.files }}"
+      when: 
+        - apache_sites.files | length > 0
+        - not ansible_check_mode
+      notify: restart apache
+      ignore_errors: yes
+    
+    - name: Criar link simbólico para compatibilidade com diferentes paths do Apache
+      ansible.builtin.file:
+        src: "{{ manutencao_html_path }}/{{ manutencao_html_file }}"
+        dest: "{{ manutencao_html_link_path }}/{{ manutencao_html_file }}"
+        state: link
+        owner: www-data
+        group: www-data
+        force: yes
+      when: not ansible_check_mode
+      ignore_errors: yes
+    
+    - name: Criar link simbólico durante dry-run (apenas informativo)
+      ansible.builtin.debug:
+        msg: "Dry-run: Criaria link simbólico de {{ manutencao_html_path }}/{{ manutencao_html_file }} para {{ manutencao_html_link_path }}/{{ manutencao_html_file }}"
+      when: ansible_check_mode
+
+  handlers:
+    - name: restart apache
+      ansible.builtin.service:
+        name: apache2
+        state: restarted
+      listen: restart apache
+
+  post_tasks:
+    - name: Testar se os arquivos foram criados corretamente
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: verify_files
+      loop:
+        - "{{ manutencao_script_path }}/{{ manutencao_script_file }}"
+        - "{{ manutencao_html_path }}/{{ manutencao_html_file }}"
+        - "{{ manutencao_html_link_path }}/{{ manutencao_html_file }}"
+        - "/etc/profile.d/99-manutencao-aliases.sh"
+    
+    - name: Exibir resumo da configuração
+      ansible.builtin.debug:
+        msg:
+          - "=== Configuração de Manutenção Concluída ==="
+          - "✅ Script de manutenção: {{ manutencao_script_path }}/{{ manutencao_script_file }}"
+          - "✅ Página HTML: {{ manutencao_html_path }}/{{ manutencao_html_file }}"
+          - "✅ Link simbólico: {{ manutencao_html_link_path }}/{{ manutencao_html_file }}"
+          - "✅ Aliases globais: /etc/profile.d/99-manutencao-aliases.sh"
+          - "✅ Aliases configurados para TODOS os usuários"
+          - ""
+          - "📌 Para usar os comandos (qualquer usuário):"
+          - "   aghu-apache-manutencao-status  # Verificar status"
+          - "   aghu-apache-manutencao-start   # Iniciar manutenção"
+          - "   aghu-apache-manutencao-stop    # Parar manutenção"
+          - ""
+          - "🔄 Para ativar os aliases na sessão atual:"
+          - "   source /etc/profile.d/99-manutencao-aliases.sh"
+          - ""
+          - "📝 Novos logins já terão os aliases automaticamente"
+    
+    - name: Exibir resumo do dry-run
+      ansible.builtin.debug:
+        msg:
+          - "=== DRY-RUN: Configuração de Manutenção ==="
+          - "📝 Seriam executadas as seguintes ações:"
+          - "   - Criar diretórios necessários"
+          - "   - Copiar arquivo HTML: {{ manutencao_html_file }}"
+          - "   - Copiar script: {{ manutencao_script_file }}"
+          - "   - Criar link simbólico"
+          - "   - Configurar aliases para TODOS os usuários do sistema"
+          - "   - Configurar ErrorDocument 503 no Apache"
+          - ""
+          - "✅ Dry-run concluído. Execute sem --check para aplicar."
+      when: ansible_check_mode

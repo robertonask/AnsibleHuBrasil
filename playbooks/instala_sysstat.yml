@@ -1,0 +1,36 @@
+---
+- name: Instalar e configurar sysstat
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Instalar sysstat
+      apt:
+        name: sysstat
+        state: present
+
+    - name: Configurar ENABLED
+      replace:
+        path: /etc/default/sysstat
+        regexp: 'ENABLED="false"'
+        replace: 'ENABLED="true"'
+
+    - name: Reiniciar serviço
+      service:
+        name: sysstat
+        state: restarted
+
+    - name: Coletar status
+      shell: systemctl is-active sysstat
+      register: status
+
+    - name: Criar diretório
+      file:
+        path: /home/rnask/Trab/Ansible/ansible/relatorios
+        state: directory
+      delegate_to: localhost
+      run_once: true
+
+    - name: Gerar relatório
+      shell: echo "{{ ansible_date_time.date }} {{ ansible_date_time.time }} {{ inventory_hostname }} sysstat {{ status.stdout }}" >> /home/rnask/Trab/Ansible/ansible/relatorios/resultado_sysstat.txt
+      delegate_to: localhost

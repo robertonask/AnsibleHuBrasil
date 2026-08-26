@@ -1,0 +1,294 @@
+---
+- name: Verificação de Vulnerabilidade CVE-2026-31431 (Copy Fail)
+  hosts: all
+  gather_facts: yes
+  become: yes
+  ignore_unreachable: yes
+  
+  vars:
+    dir_relatorios: "/home/rnask/Trab/Ansible/ansible/relatorios"
+    data_atual: "{{ ansible_date_time.date }}"
+    
+  tasks:
+    - name: Verificar se o host está acessível
+      ping:
+      register: ping_result
+      ignore_errors: yes
+      ignore_unreachable: yes
+    
+    - name: Registrar host inacessível
+      set_fact:
+        host_status: "INACESSÍVEL"
+        motivo_falha: "Host não respondeu ao ping"
+      when: ping_result is failed or ping_result.unreachable is defined
+    
+    - name: Coletar informações do sistema (apenas se acessível)
+      setup:
+        filter:
+          - ansible_distribution
+          - ansible_distribution_version
+          - ansible_kernel
+      when: ping_result is success
+      register: setup_info
+      ignore_errors: yes
+    
+    - name: Verificar falha na coleta de facts
+      set_fact:
+        host_status: "FALHA_AUTENTICACAO"
+        motivo_falha: "Falha na autenticação ou coleta de informações do sistema"
+      when: 
+        - ping_result is success
+        - setup_info is failed or setup_info is skipped
+    
+    - name: Verificar módulo vulnerável e mitigação
+      block:
+      - name: Verificar se o módulo algif_aead está carregado
+        shell: |
+          lsmod | grep -q '^algif_aead' && echo "CARREGADO" || echo "NÃO_CARREGADO"
+        register: modulo_algif
+        changed_when: false
+        ignore_errors: yes
+        when: host_status is not defined
+    
+      - name: Verificar se o módulo algif_aead está bloqueado
+        shell: |
+          if grep -q '^install algif_aead /bin/false' /etc/modprobe.d/*.conf 2>/dev/null; then
+            echo "BLOQUEADO"
+          else
+            echo "NAO_BLOQUEADO"
+          fi
+        register: bloqueio_modulo
+        changed_when: false
+        ignore_errors: yes
+        when: host_status is not defined
+      when: host_status is not defined
+
+    - name: Verificar vulnerabilidade baseado na distribuição e kernel
+      block:
+      - name: Verificar vulnerabilidade no Ubuntu
+        block:
+          - name: Verificar se Ubuntu é vulnerável (CVE-2026-31431)
+            set_fact:
+              host_status: "VULNERÁVEL"
+              motivo: "Kernel Ubuntu {{ ansible_kernel }} é afetado pela CVE-2026-31431. Kernel fixo: 5.4.0-230 (20.04), 5.15.0-179 (22.04), 6.8.0-117 (24.04)"
+            when:
+              - ansible_distribution == "Ubuntu"
+              - ansible_distribution_version is version('26.04', '<')
+              - ansible_kernel is version('5.4.0-230', '<') or
+                (ansible_distribution_version == '20.04' and ansible_kernel is version('5.4.0-230', '<')) or
+                (ansible_distribution_version == '22.04' and ansible_kernel is version('5.15.0-179', '<')) or
+                (ansible_distribution_version == '24.04' and ansible_kernel is version('6.8.0-117', '<'))
+
+          - name: Definir Ubuntu como seguro
+            set_fact:
+              host_status: "SEGURO"
+              motivo: "Kernel Ubuntu {{ ansible_kernel }} corrigido ou não afetado pela CVE-2026-31431."
+            when:
+              - ansible_distribution == "Ubuntu"
+              - host_status is not defined or host_status != "VULNERÁVEL"
+        when: 
+          - ansible_distribution == "Ubuntu"
+          - host_status is not defined
+
+      - name: Verificar vulnerabilidade no Debian
+        block:
+          - name: Definir se Debian é vulnerável
+            set_fact:
+              host_status: "VULNERÁVEL"
+              motivo: "Kernel Debian {{ ansible_kernel }} é afetado pela CVE-2026-31431. Kernel fixo: 5.10.254+ (Bullseye), 6.1.170+ (Bookworm)"
+            when:
+              - ansible_distribution == "Debian"
+              - (ansible_distribution_version == 'bullseye' and ansible_kernel is version('5.10.254', '<')) or
+                (ansible_distribution_version == 'bookworm' and ansible_kernel is version('6.1.170', '<'))
+
+          - name: Definir Debian como seguro
+            set_fact:
+              host_status: "SEGURO"
+              motivo: "Kernel Debian {{ ansible_kernel }} corrigido ou não afetado pela CVE-2026-31431."
+            when:
+              - ansible_distribution == "Debian"
+              - host_status is not defined or host_status != "VULNERÁVEL"
+        when: 
+          - ansible_distribution == "Debian"
+          - host_status is not defined
+
+      - name: Verificar vulnerabilidade por versão genérica do kernel
+        block:
+          - name: Extrair versão principal do kernel para comparação
+            set_fact:
+              kernel_major: "{{ ansible_kernel.split('.')[0] }}.{{ ansible_kernel.split('.')[1] }}"
+            
+          - name: Definir versão genérica como vulnerável
+            set_fact:
+              host_status: "VULNERÁVEL"
+              motivo: "Kernel {{ ansible_kernel }} na faixa afetada pela CVE-2026-31431 (kernel built since 2017 até versões fixas)."
+            when:
+              - ansible_distribution != "Ubuntu"
+              - ansible_distribution != "Debian"
+              - ansible_kernel is version('4.14', '>=')
+              - not (kernel_major is version('7.0', '>='))
+              - not (kernel_major == '6.19' and ansible_kernel is version('6.19.12', '>='))
+              - not (kernel_major == '6.18' and ansible_kernel is version('6.18.22', '>='))
+              - not (kernel_major == '6.12' and ansible_kernel is version('6.12.85', '>='))
+              - not (kernel_major == '6.6' and ansible_kernel is version('6.6.137', '>='))
+              - not (kernel_major == '6.1' and ansible_kernel is version('6.1.170', '>='))
+              - not (kernel_major == '5.15' and ansible_kernel is version('5.15.204', '>='))
+              - not (kernel_major == '5.10' and ansible_kernel is version('5.10.254', '>='))
+
+          - name: Definir versão genérica como segura
+            set_fact:
+              host_status: "SEGURO"
+              motivo: "Kernel {{ ansible_kernel }} está na versão corrigida ou não é afetado pela CVE-2026-31431."
+            when:
+              - ansible_distribution != "Ubuntu"
+              - ansible_distribution != "Debian"
+              - host_status is not defined or host_status != "VULNERÁVEL"
+        when: 
+          - host_status is not defined
+          - ansible_kernel is defined
+
+    - name: Definir status padrão se não foi definido
+      set_fact:
+        host_status: "NÃO_VERIFICADO"
+        motivo: "Não foi possível determinar o status de vulnerabilidade"
+      when: host_status is not defined
+
+    - name: Gerar relatório detalhado do servidor
+      copy:
+        content: |
+          =================================================================
+          RELATÓRIO DE VULNERABILIDADE - CVE-2026-31431 (Copy Fail)
+          =================================================================
+          Servidor: {{ ansible_hostname }}
+          IP: {{ ansible_default_ipv4.address | default('N/A') }}
+          Data: {{ ansible_date_time.date }}
+          Hora: {{ ansible_date_time.time }}
+          -----------------------------------------------------------------
+          {% if host_status in ['INACESSÍVEL', 'FALHA_AUTENTICACAO'] %}
+          ⚠️  SERVIDOR NÃO VERIFICADO
+          -----------------------------------------------------------------
+          STATUS: {{ host_status }}
+          MOTIVO: {{ motivo_falha | default('Falha na comunicação com o servidor') }}
+          
+          Ações necessárias:
+          1. Verificar conectividade de rede
+          2. Verificar credenciais de autenticação
+          3. Verificar se o servidor está online
+          4. Tentar novamente após resolver os problemas
+          -----------------------------------------------------------------
+          {% else %}
+          Sistema: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Kernel atual: {{ ansible_kernel }}
+          -----------------------------------------------------------------
+          STATUS: {{ host_status }}
+          -----------------------------------------------------------------
+          MOTIVO: {{ motivo | default('Motivo não definido.') }}
+          -----------------------------------------------------------------
+          MITIGAÇÃO:
+          Módulo algif_aead: {{ modulo_algif.stdout | default('N/A') }}
+          Bloqueio do módulo: {{ bloqueio_modulo.stdout | default('N/A') }}
+          -----------------------------------------------------------------
+          RECOMENDAÇÕES:
+          {% if host_status == 'VULNERÁVEL' %}
+          ⚠️ ATUALIZE O KERNEL IMEDIATAMENTE!
+          Para Ubuntu: sudo apt update && sudo apt upgrade
+          Para Debian: sudo apt update && sudo apt upgrade
+          
+          Mitigação temporária (se não for possível atualizar):
+          sudo sh -c 'echo "install algif_aead /bin/false" > /etc/modprobe.d/disable-algif-aead.conf'
+          sudo rmmod algif_aead
+          {% elif host_status == 'SEGURO' %}
+          ✅ Servidor seguro contra CVE-2026-31431.
+          {% else %}
+          ⚠️ Verificação manual necessária.
+          {% endif %}
+          {% endif %}
+          =================================================================
+        dest: "{{ dir_relatorios }}/relatorio_{{ ansible_hostname }}_{{ ansible_date_time.date }}_cve_2026_31431.txt"
+      delegate_to: localhost
+      run_once: no
+
+    - name: Adicionar ao relatório consolidado
+      lineinfile:
+        path: "{{ dir_relatorios }}/relatorio_consolidado_cve_2026_31431_{{ ansible_date_time.date }}.csv"
+        line: "{{ ansible_hostname }},{{ ansible_default_ipv4.address | default('N/A') }},{{ ansible_distribution | default('N/A') }},{{ ansible_distribution_version | default('N/A') }},{{ ansible_kernel | default('N/A') }},{{ host_status }},{{ motivo | default(motivo_falha | default('N/A')) }},{{ modulo_algif.stdout | default('N/A') }},{{ bloqueio_modulo.stdout | default('N/A') }},{{ ansible_date_time.date }}"
+        create: yes
+        state: present
+      delegate_to: localhost
+      run_once: no
+
+  post_tasks:
+    - name: Adicionar cabeçalho ao CSV
+      lineinfile:
+        path: "{{ dir_relatorios }}/relatorio_consolidado_cve_2026_31431_{{ ansible_date_time.date }}.csv"
+        line: 'Hostname,IP,Distribuição,Versão,Kernel,Status,Motivo,Modulo_algif_aead,Bloqueio_Modulo,Data_Verificacao'
+        insertbefore: BOF
+        state: present
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Gerar relatório de servidores com falha
+      shell: |
+        echo "========================================" > "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "SERVIDORES COM FALHA DE CONEXÃO/AUTENTICAÇÃO" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "========================================" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "Data: {{ ansible_date_time.date }}" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "Hora: {{ ansible_date_time.time }}" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        
+        echo "Servidores com INACESSÍVEL ou FALHA_AUTENTICACAO:" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "----------------------------------------" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        
+        if [ -f "{{ dir_relatorios }}/relatorio_consolidado_cve_2026_31431_{{ ansible_date_time.date }}.csv" ]; then
+          tail -n +2 "{{ dir_relatorios }}/relatorio_consolidado_cve_2026_31431_{{ ansible_date_time.date }}.csv" | grep -E "INACESSÍVEL|FALHA_AUTENTICACAO" | while IFS=',' read -r host ip distro versao kernel status motivo modulo bloqueio data; do
+            echo "  - $host ($ip)" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+            echo "    Status: $status" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+            echo "    Motivo: $motivo" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+            echo "" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+          done
+        else
+          echo "Nenhum servidor com falha identificado." >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        fi
+        
+        echo "" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "RECOMENDAÇÕES:" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "--------------" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "1. Verificar se os servidores estão ligados e acessíveis na rede" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "2. Verificar credenciais SSH (usuário/senha ou chave)" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "3. Verificar firewall e regras de acesso" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "4. Verificar se o serviço SSH está em execução" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+        echo "5. Tentar novamente após resolver os problemas" >> "{{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt"
+      delegate_to: localhost
+      run_once: yes
+      ignore_errors: yes
+
+    - name: Mensagem final com status
+      debug:
+        msg: |
+          ╔══════════════════════════════════════════════════════════════════════╗
+          ║              RELATÓRIO CVE-2026-31431 GERADO COM SUCESSO!          ║
+          ╚══════════════════════════════════════════════════════════════════════╝
+          
+          📁 Local: {{ dir_relatorios }}/
+          
+          📄 Arquivos gerados:
+          ┌────────────────────────────────────────────────────────────────────┐
+          │ 1. relatorio_consolidado_cve_2026_31431_{{ ansible_date_time.date }}.csv │
+          │ 2. servidores_com_falha_{{ ansible_date_time.date }}.txt           │
+          │ 3. relatorio_{{ ansible_hostname }}_{{ ansible_date_time.date }}_cve_2026_31431.txt │
+          └────────────────────────────────────────────────────────────────────┘
+          
+          📊 Status consolidado:
+          ┌────────────────────────────────────────────────────────────────────┐
+          │ Total de servidores no inventário: {{ ansible_play_hosts | length }} │
+          └────────────────────────────────────────────────────────────────────┘
+          
+          📋 Para ver servidores com falha:
+          cat {{ dir_relatorios }}/servidores_com_falha_{{ ansible_date_time.date }}.txt
+          
+          📋 Para ver o resumo completo:
+          cat {{ dir_relatorios }}/relatorio_consolidado_cve_2026_31431_{{ ansible_date_time.date }}.csv
+          
+          🔧 Para executar novamente:
+          ansible-playbook -i inventory.ini playbooks/verifica_cve_2026_31431.yml
+      run_once: yes

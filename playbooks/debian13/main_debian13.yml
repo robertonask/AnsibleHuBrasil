@@ -1,0 +1,352 @@
+---
+- name: Provisionamento, Hardening e Ajuste de Banco - Debian 13
+  hosts: all
+  become: true
+  vars:
+    relatorio_dir: "/home/rnask/Trab/Ansible/ansible/playbooks/debian13/relatorios"
+    status_pacotes: "Falhou"
+    status_usuario: "Falhou"
+    status_floppy: "Falhou"
+    status_fstab: "Não Aplicável"
+    status_ipv6: "Falhou"
+    status_sysstat: "Falhou"
+
+  tasks:
+    # ----------------------------------------------------------------
+    # ITEM 1: Instalar Pacotes Iniciais
+    # ----------------------------------------------------------------
+    - name: Instalar pacotes iniciais obrigatórios
+      ansible.builtin.apt:
+        name:
+          - sysstat
+          - vim
+          - openssh-server
+          - wget
+          - curl
+          - net-tools
+          - bind9-dnsutils
+          - apt-transport-https
+          - gnupg
+          - htop
+          - gnupg2
+          - ca-certificates
+          - gnupg-utils
+          - gpg
+          - sudo
+        state: present
+        update_cache: yes
+      register: apt_res
+      ignore_errors: true
+
+    - name: Definir status dos pacotes
+      ansible.builtin.set_fact:
+        status_pacotes: "{{ 'Sucesso' if apt_res.failed is not defined or not apt_res.failed else 'Erro' }}"
+
+    # ----------------------------------------------------------------
+    # ITEM 2: Adicionar Usuário supaghu com Sudo
+    # ----------------------------------------------------------------
+    - name: Criar usuario supaghu sem arquivos de skel padrão
+      ansible.builtin.user:
+        name: supaghu
+        shell: /bin/bash
+        create_home: yes
+        state: present
+      register: user_res
+      ignore_errors: true
+
+    - name: Remover .bashrc do supaghu (conforme script original)
+      ansible.builtin.file:
+        path: /home/supaghu/.bashrc
+        state: absent
+      when: user_res.changed
+
+    - name: Configurar sudoers sem senha para supaghu
+      ansible.builtin.copy:
+        content: "supaghu ALL=(ALL) NOPASSWD: ALL"
+        dest: /etc/sudoers.d/supaghu
+        mode: '0440'
+        owner: root
+        group: root
+      register: sudo_res
+      ignore_errors: true
+
+    - name: Definir status do usuario
+      ansible.builtin.set_fact:
+        status_usuario: "{{ 'Sucesso' if (not user_res.failed|default(false) and not sudo_res.failed|default(false)) else 'Erro' }}"
+
+    # ----------------------------------------------------------------
+    # ITEM 3: Desabilitar Floppy Driver
+    # ----------------------------------------------------------------
+    - name: Blacklist do modulo floppy
+      ansible.builtin.copy:
+        content: "blacklist floppy"
+        dest: /etc/modprobe.d/blacklist-floppy.conf
+        mode: '0644'
+      register: flop_conf
+
+    - name: Atualizar initramfs
+      ansible.builtin.command: update-initramfs -u
+      register: initramfs_res
+      ignore_errors: true
+      when: flop_conf.changed
+
+    - name: Definir status do floppy
+      ansible.builtin.set_fact:
+        status_floppy: "{{ 'Sucesso' if not initramfs_res.failed|default(false) else 'Erro' }}"
+
+    # ----------------------------------------------------------------
+    # ITEM 4: Validar LVs e Ajustar fstab dinamicamente (PostgreSQL 9.4 ou 15)
+    # ----------------------------------------------------------------
+    - name: Validar e aplicar configuracoes de fstab para PostgreSQL
+      block:
+        - name: Verificar se o diretório do PostgreSQL 9.4 existe
+          ansible.builtin.stat:
+            path: /var/lib/postgresql/9.4
+          register: pg94_dir
+
+        - name: Verificar se o diretório do PostgreSQL 15 existe
+          ansible.builtin.stat:
+            path: /usr/lib/postgresql/15
+          register: pg15_dir
+
+        # Validação e Aplicação PostgreSQL 9.4
+        - name: Validar existência física dos LVs do PostgreSQL 9.4
+          ansible.builtin.stat:
+            path: "{{ item.src }}"
+          loop:
+            - { path: '/var/lib/postgresql', src: '/dev/mapper/VG_DADOS-LV_PGDATA' }
+            - { path: '/var/lib/postgresql/9.4/main/pg_tblspc/idx', src: '/dev/mapper/VG_DADOS-LV_PGIDX' }
+            - { path: '/var/lib/postgresql/9.4/main/pg_xlog', src: '/dev/mapper/VG_DADOS-LV_PGXLOG' }
+          when: pg94_dir.stat.exists
+          register: lvs_94_check
+
+        - name: Aplicar fstab para PostgreSQL 9.4 (Apenas LVs existentes)
+          ansible.posix.mount:
+            path: "{{ item.item.path }}"
+            src: "{{ item.item.src }}"
+            fstype: ext4
+            opts: defaults,noatime,nodiratime
+            dump: "0"
+            passno: "2"
+            state: present
+          loop: "{{ lvs_94_check.results | default([]) }}"
+          when: 
+            - pg94_dir.stat.exists
+            - item.stat.exists | default(false)
+
+        # Validação e Aplicação PostgreSQL 15
+        - name: Validar existência física dos LVs do PostgreSQL 15
+          ansible.builtin.stat:
+            path: "{{ item.src }}"
+          loop:
+            - { path: '/pgsql_data', src: '/dev/mapper/VG_DADOS-LV_PGSQL_DATA' }
+            - { path: '/pgsql_wal', src: '/dev/mapper/VG_DADOS-LV_PGSQL_WAL' }
+            - { path: '/pgsql_log', src: '/dev/mapper/VG_DADOS-LV_PGSQL_LOG' }
+            - { path: '/pgsql_arch', src: '/dev/mapper/VG_DADOS-LV_PGSQL_ARCH' }
+          when: pg15_dir.stat.exists
+          register: lvs_15_check
+
+        - name: Aplicar fstab para PostgreSQL 15 (Apenas LVs existentes)
+          ansible.posix.mount:
+            path: "{{ item.item.path }}"
+            src: "{{ item.item.src }}"
+            fstype: ext4
+            opts: defaults,noatime,nodiratime
+            dump: "0"
+            passno: "2"
+            state: present
+          loop: "{{ lvs_15_check.results | default([]) }}"
+          when: 
+            - pg15_dir.stat.exists
+            - item.stat.exists | default(false)
+
+        - name: Definir status do fstab baseado nas validações
+          ansible.builtin.set_fact:
+            status_fstab: >-
+              {% if pg94_dir.stat.exists %}Sucesso (PostgreSQL 9.4 e LVs físicos validados)
+              {% elif pg15_dir.stat.exists %}Sucesso (PostgreSQL 15 e LVs físicos validados)
+              {% else %}Não Aplicável (Diretórios do Postgres não mapeados neste host){% endif %}
+
+      rescue:
+        - name: Definir status de erro do fstab
+          ansible.builtin.set_fact:
+            status_fstab: "Erro ao validar ou montar volumes no fstab"
+
+    # ----------------------------------------------------------------
+    # ITEM 5: Desabilitar IPv6
+    # ----------------------------------------------------------------
+    - name: Desabilitar IPv6 no sysctl
+      ansible.posix.sysctl:
+        name: "{{ item }}"
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+      loop:
+        - net.ipv6.conf.all.disable_ipv6
+        - net.ipv6.conf.default.disable_ipv6
+        - net.ipv6.conf.lo.disable_ipv6
+      register: sysctl_res
+      ignore_errors: true
+
+    - name: Adicionar desabilitacao do IPv6 no GRUB
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        line: 'GRUB_CMDLINE_LINUX="ipv6.disable=1"'
+        regexp: '^GRUB_CMDLINE_LINUX=.*ipv6\.disable=1.*'
+        state: present
+      register: grub_entry
+
+    - name: Atualizar GRUB
+      ansible.builtin.command: update-grub
+      register: grub_res
+      ignore_errors: true
+      when: grub_entry.changed
+
+    - name: Definir status do IPv6
+      ansible.builtin.set_fact:
+        status_ipv6: "{{ 'Sucesso' if (not sysctl_res.failed|default(false) and not grub_res.failed|default(false)) else 'Erro' }}"
+
+    # ----------------------------------------------------------------
+    # ITEM 6: Habilitar sysstat (Compatibilidade Avançada Debian 13)
+    # ----------------------------------------------------------------
+    - name: Habilitar sysstat no /etc/default/sysstat
+      ansible.builtin.lineinfile:
+        path: /etc/default/sysstat
+        regexp: '^ENABLED='
+        line: 'ENABLED="true"'
+        create: yes
+      register: sysstat_conf
+      ignore_errors: true
+
+    - name: Forçar reconfiguração do sysstat via dpkg para registrar os serviços
+      ansible.builtin.command: dpkg-reconfigure -f noninteractive sysstat
+      when: sysstat_conf.changed
+      ignore_errors: true
+
+    - name: Recarregar daemons do systemd para mapear novos arquivos
+      ansible.builtin.systemd:
+        daemon_reload: yes
+      when: sysstat_conf.changed
+
+    - name: Garantir que o servico principal do sysstat esteja iniciado
+      ansible.builtin.systemd:
+        name: sysstat
+        state: restarted
+        enabled: yes
+      register: sysstat_service
+      ignore_errors: true
+
+    - name: Garantir inicialização dos timers de coleta do sysstat (Requisito Debian)
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - sysstat-collect.timer
+        - sysstat-summary.timer
+      ignore_errors: true
+      when: sysstat_service.failed is not defined or not sysstat_service.failed
+
+    - name: Definir status do sysstat
+      ansible.builtin.set_fact:
+        status_sysstat: "{{ 'Sucesso' if (not sysstat_conf.failed|default(false) and not sysstat_service.failed|default(false)) else 'Erro ao ativar daemons' }}"
+
+    # ----------------------------------------------------------------
+    # ITEM 7: Configuração do repo (Cliente reprepro)
+    # ----------------------------------------------------------------
+    - name: Definir se é legado
+      set_fact:
+        legacy: "{{ ansible_distribution_major_version | int <= 10 }}"
+
+    # LEGADO
+    - name: Adicionar chave legado
+      shell: wget -qO- {{ repo_url }}/ebserh.gpg | apt-key add -
+      when: legacy
+      register: resultado_legado
+
+    - name: Criar repo legado
+      copy:
+        dest: /etc/apt/sources.list.d/ebserh.list
+        content: |
+          deb {{ repo_url }} {{ ansible_distribution_release }} main contrib
+      when: legacy
+      register: resultado_legado_repo
+
+    # MODERNO
+    - name: Baixar chave moderna
+      get_url:
+        url: "{{ repo_url }}/ebserh.gpg"
+        dest: "{{ keyring_path }}"
+        mode: '0644'
+      when: not legacy
+      register: resultado_moderno_gpg
+
+    - name: Criar repo moderno
+      copy:
+        dest: /etc/apt/sources.list.d/ebserh.list
+        content: |
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }} main contrib non-free non-free-firmware
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }}-updates main contrib non-free non-free-firmware
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }}-security main contrib non-free non-free-firmware
+        mode: '0644'
+      when: not legacy
+      register: resultado_moderno_repo
+
+    # 🧹 LIMPEZA
+    - name: Backup do sources.list
+      copy:
+        src: /etc/apt/sources.list
+        dest: /etc/apt/sources.list.bkp
+        remote_src: yes
+      ignore_errors: yes
+      register: resultado_backup
+
+    - name: Limpar sources.list
+      copy:
+        dest: /etc/apt/sources.list
+        content: ""
+      register: resultado_limpeza
+
+    # 🔄 UPDATE
+    - name: Atualizar apt
+      apt:
+        update_cache: yes
+      register: resultado_update
+
+    # 📝 GERAR RELATÓRIO
+    - name: Escrever relatório das alterações
+      lineinfile:
+        path: "/home/rnask/Trab/Ansible/ansible/relatorios/resultado_repo.txt"
+        line: "{{ ansible_date_time.date }} {{ ansible_date_time.time }} {{ inventory_hostname }} {{ item.name }} {{ item.status }}"
+        create: yes
+      delegate_to: localhost
+      loop:
+        - { name: "chave_legado", status: "{{ resultado_legado.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_legado.changed }}" }
+        - { name: "repo_legado", status: "{{ resultado_legado_repo.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_legado_repo.changed }}" }
+        - { name: "chave_moderna", status: "{{ resultado_moderno_gpg.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_moderno_gpg.changed }}" }
+        - { name: "repo_moderno", status: "{{ resultado_moderno_repo.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_moderno_repo.changed }}" }
+        - { name: "backup_sources", status: "{{ resultado_backup.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_backup.changed }}" }
+        - { name: "limpeza_sources", status: "{{ resultado_limpeza.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_limpeza.changed }}" }
+        - { name: "apt_update", status: "{{ resultado_update.changed | ternary('changed', 'unchanged') }}", changed: "{{ resultado_update.changed }}" }
+      when: item.changed
+
+    # ----------------------------------------------------------------
+    # GERAÇÃO DO RELATÓRIO LOCAL (Criado na máquina executora por Host)
+    # ----------------------------------------------------------------
+    - name: Garantir que a pasta de relatorios local existe
+      ansible.builtin.file:
+        path: "{{ relatorio_dir }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      become: false
+      run_once: true
+
+    - name: Criar template de relatorio na maquina de gerencia
+      ansible.builtin.template:
+        src: relatorio_host.j2
+        dest: "{{ relatorio_dir }}/relatorio_{{ inventory_hostname }}.txt"
+        mode: '0644'
+      delegate_to: localhost
+      become: false

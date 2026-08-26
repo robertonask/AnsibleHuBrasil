@@ -1,0 +1,9 @@
+2026-07-27 12:34:14 tlp-debina13 repo_moderno changed
+2026-07-27 12:34:14 tlp-debina13 backup_sources changed
+2026-07-27 12:34:14 tlp-debina13 limpeza_sources changed
+2026-07-27 12:34:14 tlp-debina13 apt_update changed
+2026-07-27 12:37:29 tlp-debina13 repo_moderno changed
+2026-07-27 12:37:29 tlp-debina13 backup_sources changed
+2026-07-27 12:37:29 tlp-debina13 apt_update changed
+2026-07-28 08:18:29 tlp-debina13 repo_moderno changed
+2026-07-28 08:18:29 tlp-debina13 apt_update changed

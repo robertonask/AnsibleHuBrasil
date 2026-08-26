@@ -1,0 +1,31 @@
+---
+# Diretório dos certificados no servidor
+cert_dir: /etc/apache2/certs
+
+# Arquivo PFX no controlador Ansible (roles/certificados/files/)
+#pfx_file: aghu.ebserh.gov.br.pfx
+pfx_file: homolog-aghu.ebserh.gov.br.pfx
+#pfx_file: teste-sbis.ebserh.gov.br.pfx
+
+# ============================================
+# SENHA DO CERTIFICADO PFX
+# ============================================
+# Adicione a senha do arquivo homolog-aghu.ebserh.gov.br.pfx
+pfx_password: "hubrasil@2026"
+
+# Destino do PFX no servidor
+pfx_remote: "{{ cert_dir }}/{{ pfx_file }}"
+
+# Nomes dos arquivos utilizados pelo Apache
+cert_file: "{{ cert_dir }}/wildcardaghu.crt"
+key_file: "{{ cert_dir }}/wildcardaghu.key"
+chain_file: "{{ cert_dir }}/wildcardaghu.pem"
+
+# Arquivo de configuração do VirtualHost do AGHU
+apache_vhost: /etc/apache2/sites-available/aghu.conf
+
+# Diretório de backup (criado automaticamente a cada execução)
+backup_dir: "{{ cert_dir }}/backup_{{ ansible_date_time.date }}_{{ ansible_date_time.time | regex_replace(':', '') }}"
+
+# Serviço do Apache
+apache_service: apache2

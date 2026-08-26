@@ -1,0 +1,56 @@
+---
+- name: Verificar validade dos certificados Apache AGHU
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - verifica_certificados
+
+
+- name: Gerar relatórios CSV
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    pasta: /home/rnask/Trab/Ansible/ansible/playbooks/relatorios
+
+  tasks:
+
+    - name: Criar diretório dos relatórios
+      file:
+        path: "{{ pasta }}"
+        state: directory
+        mode: '0755'
+
+    - name: Criar CSV de servidores OK
+      copy:
+        dest: "{{ pasta }}/certificados_ok.csv"
+        content: "hostname,ip,validade,dias_restantes\n"
+        force: yes
+
+    - name: Criar CSV de servidores com erro
+      copy:
+        dest: "{{ pasta }}/certificados_erro.csv"
+        content: "hostname,ip,motivo\n"
+        force: yes
+
+    - name: Escrever servidores OK
+      lineinfile:
+        path: "{{ pasta }}/certificados_ok.csv"
+        insertafter: EOF
+        line: "{{ hostvars[item].relatorio_certificado.hostname }},{{ hostvars[item].relatorio_certificado.ip }},{{ hostvars[item].relatorio_certificado.validade }},{{ hostvars[item].relatorio_certificado.dias }}"
+      loop: "{{ groups['all'] }}"
+      when:
+        - hostvars[item].relatorio_certificado is defined
+        - hostvars[item].relatorio_certificado.status == "OK"
+
+    - name: Escrever servidores com erro
+      lineinfile:
+        path: "{{ pasta }}/certificados_erro.csv"
+        insertafter: EOF
+        line: "{{ item }},{{ hostvars[item].ansible_host | default(item) }},Certificado não encontrado"
+      loop: "{{ groups['all'] }}"
+      when:
+        - hostvars[item].relatorio_certificado is not defined
+          or hostvars[item].relatorio_certificado.status == "ERRO"

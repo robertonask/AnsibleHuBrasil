@@ -1,0 +1,7 @@
+---
+- name: Restaurar certificado Apache (Emergencial)
+  hosts: all
+  become: yes
+
+  roles:
+    - restaurar_certificado

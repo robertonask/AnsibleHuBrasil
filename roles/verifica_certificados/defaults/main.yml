@@ -1,0 +1,6 @@
+---
+# Certificado utilizado pelo Apache
+certificado: /etc/apache2/certs/wildcardaghu.crt
+
+# Diretório onde serão gravados os relatórios
+relatorio_dir: /home/rnask/Trab/Ansible/ansible/playbooks/relatorios

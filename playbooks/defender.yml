@@ -1,0 +1,7 @@
+---
+- name: Instalar Microsoft Defender Endpoint
+  hosts: defender
+  become: yes
+
+  roles:
+    - defender

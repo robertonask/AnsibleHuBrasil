@@ -1,0 +1,57 @@
+- name: Configurar repositório EBSERH
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Definir se é legado
+      set_fact:
+        legacy: "{{ ansible_distribution_major_version | int <= 10 }}"
+
+    # 🔴 LEGADO
+    - name: Adicionar chave legado
+      shell: wget -qO- {{ repo_url }}/ebserh.gpg | apt-key add -
+      when: legacy
+
+    - name: Criar repo legado
+      copy:
+        dest: /etc/apt/sources.list.d/ebserh.list
+        content: |
+          deb {{ repo_url }} {{ ansible_distribution_release }} main contrib
+      when: legacy
+
+    # 🟢 MODERNO
+    - name: Baixar chave moderna
+      get_url:
+        url: "{{ repo_url }}/ebserh.gpg"
+        dest: "{{ keyring_path }}"
+        mode: '0644'
+      when: not legacy
+
+    - name: Criar repo moderno
+      copy:
+        dest: /etc/apt/sources.list.d/ebserh.list
+        content: |
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }} main contrib
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }}-updates main contrib
+          deb [signed-by={{ keyring_path }}] {{ repo_url }} {{ ansible_distribution_release }}-security main contrib
+        mode: '0644'
+      when: not legacy
+
+    # 🧹 LIMPEZA
+    - name: Backup do sources.list
+      copy:
+        src: /etc/apt/sources.list
+        dest: /etc/apt/sources.list.bkp
+        remote_src: yes
+      ignore_errors: yes
+
+    - name: Limpar sources.list
+      copy:
+        dest: /etc/apt/sources.list
+        content: ""
+
+    # 🔄 UPDATE
+    - name: Atualizar apt
+      apt:
+        update_cache: yes

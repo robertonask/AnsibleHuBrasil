@@ -1,0 +1,92 @@
+---
+- name: RESTAURAR APACHE COM CERTIFICADO SNAKEOIL (EMERGÊNCIA)
+  hosts: cff-pvl-apr1
+  become: yes
+  vars:
+    cert_dir: "/etc/apache2/certs"
+    report_dir: "/home/rnask/Trab/Ansible/ansible/playbooks/relatorios"
+    report_file: "{{ report_dir }}/emergencia_snakeoil_{{ ansible_date_time.date }}.txt"
+
+  tasks:
+    - name: CRIAR DIRETÓRIO DE RELATÓRIOS
+      ansible.builtin.file:
+        path: "{{ report_dir }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: yes
+      become: no
+
+    - name: INSTALAR CERTIFICADO SNAKEOIL
+      ansible.builtin.shell:
+        cmd: |
+          cp /etc/ssl/certs/ssl-cert-snakeoil.pem {{ cert_dir }}/wildcardaghu.crt
+          cp /etc/ssl/private/ssl-cert-snakeoil.key {{ cert_dir }}/wildcardaghu.key
+          cp /etc/ssl/certs/ssl-cert-snakeoil.pem {{ cert_dir }}/wildcardaghu.pem
+          chmod 644 {{ cert_dir }}/wildcardaghu.crt
+          chmod 600 {{ cert_dir }}/wildcardaghu.key
+          chmod 644 {{ cert_dir }}/wildcardaghu.pem
+          echo "✅ Certificado snakeoil instalado"
+      register: install_snakeoil
+
+    - name: VERIFICAR CORRESPONDÊNCIA
+      ansible.builtin.shell:
+        cmd: |
+          key_hash=$(openssl rsa -in {{ cert_dir }}/wildcardaghu.key -noout -modulus 2>/dev/null | openssl md5)
+          cert_hash=$(openssl x509 -in {{ cert_dir }}/wildcardaghu.crt -noout -pubkey | openssl md5)
+          if [ "$key_hash" = "$cert_hash" ]; then
+            echo "✅ OK - Correspondem!"
+          else
+            echo "❌ ERRO - Não correspondem!"
+          fi
+      register: verify_match
+
+    - name: TESTAR CONFIGURAÇÃO
+      ansible.builtin.command:
+        cmd: "apache2ctl configtest"
+      register: config_test
+      ignore_errors: yes
+
+    - name: INICIAR APACHE
+      ansible.builtin.systemd:
+        name: apache2
+        state: started
+        enabled: yes
+      when: config_test.rc == 0
+      register: apache_start
+
+    - name: GERAR RELATÓRIO
+      ansible.builtin.copy:
+        content: |
+          ================================================================================
+          RELATÓRIO DE EMERGÊNCIA - RESTAURAÇÃO SNAKEOIL
+          ================================================================================
+          Data: {{ ansible_date_time.date }}
+          Hora: {{ ansible_date_time.time }}
+          Servidor: {{ inventory_hostname }}
+          --------------------------------------------------------------------------------
+          
+          CERTIFICADO INSTALADO: snakeoil (auto-assinado)
+          STATUS: {{ '✅ SUCESSO' if apache_start.changed else '⚠️ JÁ RODANDO' }}
+          
+          VALIDAÇÃO:
+          {{ verify_match.stdout }}
+          
+          CONFIGURAÇÃO:
+          {{ '✅ VÁLIDA' if config_test.rc == 0 else '❌ INVÁLIDA' }}
+          
+          APACHE:
+          {{ '✅ INICIADO' if apache_start.changed else '⚠️ JÁ RODANDO' }}
+          
+          ================================================================================
+          FIM DO RELATÓRIO
+          ================================================================================
+        dest: "{{ report_file }}"
+        mode: '0644'
+      delegate_to: localhost
+      run_once: yes
+      become: no
+
+    - name: EXIBIR RELATÓRIO
+      ansible.builtin.debug:
+        msg: "📋 RELATÓRIO: {{ report_file }}"

@@ -1,0 +1,234 @@
+---
+- name: INSTALAR CERTIFICADO PROVISÓRIO (SNAKEOIL) EM SERVIDORES APACHE
+  hosts: hucff-pvl-apr1
+  gather_facts: yes
+  become: yes
+  vars:
+    cert_dir: "/etc/apache2/certs"
+    sites_dir: "/etc/apache2/sites-available"
+    backup_dir: "/etc/apache2/certs/backup_snakeoil_{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':', '') }}"
+    report_dir: "/home/rnask/Trab/Ansible/ansible/playbooks/relatorios"
+    report_file: "{{ report_dir }}/certificado_provisorio_{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':', '') }}.txt"
+    snakeoil_cert: "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+    snakeoil_key: "/etc/ssl/private/ssl-cert-snakeoil.key"
+
+  tasks:
+    - name: CRIAR DIRETÓRIO DE RELATÓRIOS
+      ansible.builtin.file:
+        path: "{{ report_dir }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: yes
+      become: no
+
+    - name: VERIFICAR SISTEMA OPERACIONAL
+      ansible.builtin.setup:
+        filter: ansible_os_family
+      register: os_info
+
+    - name: DEFINIR CAMINHOS PARA DIFERENTES SISTEMAS
+      ansible.builtin.set_fact:
+        apache_service: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd' }}"
+        apache_user: "{{ 'www-data' if ansible_os_family == 'Debian' else 'apache' }}"
+        certs_path: "{{ '/etc/apache2/certs' if ansible_os_family == 'Debian' else '/etc/httpd/conf.d/ssl' }}"
+        sites_path: "{{ '/etc/apache2/sites-available' if ansible_os_family == 'Debian' else '/etc/httpd/conf.d' }}"
+      when: os_info.ansible_facts.ansible_os_family in ['Debian', 'RedHat']
+
+    - name: CRIAR DIRETÓRIO DE CERTIFICADOS
+      ansible.builtin.file:
+        path: "{{ certs_path }}"
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+      when: os_info.ansible_facts.ansible_os_family in ['Debian', 'RedHat']
+
+    - name: INICIAR RELATÓRIO
+      ansible.builtin.copy:
+        content: |
+          ================================================================================
+          RELATÓRIO DE INSTALAÇÃO DE CERTIFICADO PROVISÓRIO - SNAKEOIL
+          ================================================================================
+          Data: {{ ansible_date_time.date }}
+          Hora: {{ ansible_date_time.time }}
+          Servidor: {{ inventory_hostname }} ({{ ansible_default_ipv4.address }})
+          Sistema: {{ ansible_os_family }}
+          --------------------------------------------------------------------------------
+          
+          INICIANDO INSTALAÇÃO DO CERTIFICADO PROVISÓRIO...
+        dest: "{{ report_file }}"
+        mode: '0644'
+      delegate_to: localhost
+      run_once: yes
+      become: no
+
+    - name: FAZER BACKUP DOS CERTIFICADOS ATUAIS
+      ansible.builtin.shell:
+        cmd: |
+          mkdir -p {{ backup_dir }}
+          cp -p {{ certs_path }}/*.crt {{ certs_path }}/*.key {{ certs_path }}/*.pem {{ backup_dir }}/ 2>/dev/null || true
+          echo "✅ Backup criado em: {{ backup_dir }}"
+          ls -la {{ backup_dir }} 2>/dev/null || echo "Nenhum certificado encontrado para backup"
+      register: backup_result
+      ignore_errors: yes
+
+    - name: REGISTRAR BACKUP NO RELATÓRIO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          BACKUP DOS CERTIFICADOS:
+          {{ backup_result.stdout }}
+          --------------------------------------------------------------------------------
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+      become: no
+
+    - name: INSTALAR CERTIFICADO SNAKEOIL
+      ansible.builtin.shell:
+        cmd: |
+          # Instalar pacote ssl-cert se necessário
+          if [ "{{ ansible_os_family }}" = "Debian" ]; then
+            apt-get update -qq && apt-get install -y ssl-cert 2>/dev/null || true
+          elif [ "{{ ansible_os_family }}" = "RedHat" ]; then
+            yum install -y mod_ssl openssl 2>/dev/null || true
+          fi
+          
+          # Copiar certificado snakeoil
+          cp {{ snakeoil_cert }} {{ certs_path }}/snakeoil.crt
+          cp {{ snakeoil_key }} {{ certs_path }}/snakeoil.key
+          
+          # Configurar permissões
+          chmod 644 {{ certs_path }}/snakeoil.crt
+          chmod 600 {{ certs_path }}/snakeoil.key
+          chown root:{{ apache_user }} {{ certs_path }}/snakeoil.key 2>/dev/null || true
+          
+          echo "✅ Certificado snakeoil instalado em: {{ certs_path }}"
+      register: install_snakeoil
+      ignore_errors: yes
+
+    - name: VERIFICAR CERTIFICADO SNAKEOIL
+      ansible.builtin.shell:
+        cmd: |
+          if [ -f "{{ certs_path }}/snakeoil.crt" ]; then
+            echo "✅ Certificado snakeoil instalado com sucesso"
+            openssl x509 -in {{ certs_path }}/snakeoil.crt -noout -dates -subject
+          else
+            echo "❌ Certificado snakeoil NÃO encontrado"
+          fi
+      register: verify_snakeoil
+      ignore_errors: yes
+
+    - name: REGISTRAR INSTALAÇÃO NO RELATÓRIO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          INSTALAÇÃO DO CERTIFICADO SNAKEOIL:
+          {{ install_snakeoil.stdout }}
+          
+          VERIFICAÇÃO:
+          {{ verify_snakeoil.stdout }}
+          --------------------------------------------------------------------------------
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+      become: no
+
+    - name: PROCURAR ARQUIVOS DE CONFIGURAÇÃO SSL
+      ansible.builtin.find:
+        paths: "{{ sites_path }}"
+        patterns: "*.conf"
+        contains: "SSLCertificateFile|SSLEngine"
+      register: ssl_configs
+      when: os_info.ansible_facts.ansible_os_family in ['Debian', 'RedHat']
+
+    - name: ATUALIZAR CONFIGURAÇÃO PARA USAR SNAKEOIL
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: "{{ regex_pattern }}"
+        replace: "{{ replace_value }}"
+      loop: "{{ ssl_configs.files }}"
+      vars:
+        regex_pattern: "(SSLCertificateFile\\s+).*"
+        replace_value: "\\1{{ certs_path }}/snakeoil.crt"
+      when: ssl_configs.files | length > 0
+      register: update_config
+      ignore_errors: yes
+
+    - name: TESTAR CONFIGURAÇÃO DO APACHE
+      ansible.builtin.command:
+        cmd: "{{ 'apache2ctl' if ansible_os_family == 'Debian' else 'httpd' }} configtest"
+      register: config_test
+      ignore_errors: yes
+
+    - name: REGISTRAR TESTE DE CONFIGURAÇÃO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          TESTE DE CONFIGURAÇÃO:
+          {% if config_test.rc == 0 %}
+          ✅ CONFIGURAÇÃO VÁLIDA
+          {{ config_test.stdout }}
+          {% else %}
+          ❌ CONFIGURAÇÃO INVÁLIDA
+          {{ config_test.stderr }}
+          {% endif %}
+          --------------------------------------------------------------------------------
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+      become: no
+
+    - name: RECARREGAR APACHE
+      ansible.builtin.systemd:
+        name: "{{ apache_service }}"
+        state: reloaded
+      when: config_test.rc == 0
+      register: apache_reload
+
+    - name: VERIFICAR STATUS DO APACHE
+      ansible.builtin.systemd:
+        name: "{{ apache_service }}"
+      register: apache_status
+
+    - name: TESTAR CONEXÃO HTTPS
+      ansible.builtin.uri:
+        url: "https://{{ inventory_hostname }}"
+        validate_certs: no
+        timeout: 10
+      register: https_test
+      ignore_errors: yes
+      delegate_to: localhost
+
+    - name: FINALIZAR RELATÓRIO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          RECARREGAMENTO DO APACHE:
+          {{ '✅ SUCESSO' if apache_reload.changed else '⚠️ NÃO FOI NECESSÁRIO' }}
+          
+          STATUS DO APACHE:
+          Active: {{ apache_status.status.ActiveState }}
+          
+          TESTE HTTPS:
+          Status: {{ '✅ SUCESSO' if https_test.status == 200 else '⚠️ VERIFICAR MANUALMENTE' }}
+          Código: {{ https_test.status | default('N/A') }}
+          
+          ================================================================================
+          RELATÓRIO FINALIZADO
+          ================================================================================
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+      become: no
+
+    - name: EXIBIR RESUMO
+      ansible.builtin.debug:
+        msg: |
+          ========================================
+          ✅ CERTIFICADO PROVISÓRIO INSTALADO!
+          📋 RELATÓRIO: {{ report_file }}
+          🌐 Servidor: {{ inventory_hostname }}
+          ========================================
+      run_once: yes

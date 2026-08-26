@@ -1,0 +1,8 @@
+repo_url: "http://sede-vp-repo-debian.ebserhnet.ebserh.gov.br/debian"
+keyring_path: "/usr/share/keyrings/ebserh.gpg"
+#ansible_user: ansible
+#ansible_user: srv_zabbix
+#ansible_user: adm.jrcarvalho
+ansible_user: supaghu
+ansible_password: "{{ vault_ssh_password }}"
+ansible_become_password: "{{ vault_sudo_password }}"

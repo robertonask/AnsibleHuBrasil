@@ -1,0 +1,165 @@
+===============================================================================
+RELATÓRIO DE INSTALAÇÃO DO WAZUH AGENT
+Executado em: 2026-07-31 15:33:34
+===============================================================================
+
+[Host]: hcpr-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: hcpr-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: huab-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno 97] Address family not supported by protocol>
+-------------------------------------------------------------------------------
+[Host]: huab-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno 97] Address family not supported by protocol>
+-------------------------------------------------------------------------------
+[Host]: hucff-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: hucff-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: hupaa-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno 97] Address family not supported by protocol>
+-------------------------------------------------------------------------------
+[Host]: hupaa-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno 97] Address family not supported by protocol>
+-------------------------------------------------------------------------------
+[Host]: huufgd-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huufgd-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huufjf-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: huufjf-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huufrr-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huufrr-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: ipp-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: ipp-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: meufrj-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: meufrj-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: ufs-hvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: ufs-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: ufs-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: cat-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: cat-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: ufsj-hvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: ufsj-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: ufsj-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hcufmg-pv-postgresql-master
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: hcufmg-pv-postgresql-slave
+- Status: FALHA
+- Mensagem: O host não pôde ser contactado ou falhou antes da execução das tasks.
+-------------------------------------------------------------------------------
+[Host]: hewab-pv-postgresql-master
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno -3] Temporary failure in name resolution>
+-------------------------------------------------------------------------------
+[Host]: hewab-pv-postgresql-slave
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno -3] Temporary failure in name resolution>
+-------------------------------------------------------------------------------
+[Host]: hupest-pv-postgresql-master
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hupest-pv-postgresql-slave
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+

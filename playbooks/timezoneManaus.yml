@@ -1,0 +1,25 @@
+---
+- name: Alterar timezone para Manaus
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: Instalar tzdata
+      apt:
+        name: tzdata
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+    
+    - name: Configurar timezone para America/Manaus
+      timezone:
+        name: America/Manaus
+    
+    - name: Verificar nova data/hora
+      command: date
+      register: date_output
+    
+    - name: Exibir resultado
+      debug:
+        msg: "Timezone alterado para Manaus. Data/Hora atual: {{ date_output.stdout }}"

@@ -1,0 +1,5 @@
+---
+mdatp_proxy: ""
+mdatp_exclusions:
+  - /var/lib/docker
+  - /var/lib/containerd

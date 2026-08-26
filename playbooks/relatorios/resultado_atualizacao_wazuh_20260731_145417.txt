@@ -1,0 +1,11 @@
+===============================================================================
+RELATÓRIO DE INSTALAÇÃO DO WAZUH AGENT
+Executado em: 2026-07-31 14:54:17
+===============================================================================
+
+[Host]: huufjf-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+

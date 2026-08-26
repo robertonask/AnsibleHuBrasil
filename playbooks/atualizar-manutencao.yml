@@ -1,0 +1,66 @@
+---
+- name: Atualizar script de manutenção nos servidores
+  hosts: servidores_apresentacao
+  become: yes
+  
+  vars:
+    manutencao_script_path: "/usr/share/aghu/aghu-jk/scripts/"
+    manutencao_script_file: "manutencao.sh"
+    
+  tasks:
+    - name: Garantir que o diretório exista
+      ansible.builtin.file:
+        path: "{{ manutencao_script_path }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+        recurse: yes
+    
+    - name: Copiar novo script de manutenção corrigido
+      ansible.builtin.template:
+        src: "../templates/{{ manutencao_script_file }}.j2"
+        dest: "{{ manutencao_script_path }}/{{ manutencao_script_file }}"
+        owner: root
+        group: root
+        mode: '0755'
+        backup: yes
+    
+    - name: Garantir que o script seja executável
+      ansible.builtin.file:
+        path: "{{ manutencao_script_path }}/{{ manutencao_script_file }}"
+        mode: '0755'
+        state: file
+    
+    - name: Verificar se a manutenção estava ativa antes da atualização
+      ansible.builtin.stat:
+        path: "/tmp/aghu-jk-manutencao.lck"
+      register: lock_file
+    
+    - name: Avisar sobre manutenção ativa
+      ansible.builtin.debug:
+        msg: "⚠️ Atenção: A manutenção estava ATIVA neste servidor. Verifique se precisa reativar manualmente."
+      when: lock_file.stat.exists
+    
+    - name: Testar sintaxe do script
+      ansible.builtin.shell:
+        cmd: "bash -n {{ manutencao_script_path }}/{{ manutencao_script_file }}"
+      register: script_test
+      changed_when: false
+    
+    - name: Exibir resultado do teste
+      ansible.builtin.debug:
+        msg: "✅ Script sintaticamente correto"
+      when: script_test.rc == 0
+    
+    - name: Exibir resumo da atualização
+      ansible.builtin.debug:
+        msg:
+          - "=== Atualização Concluída ==="
+          - "✅ Script atualizado: {{ manutencao_script_path }}/{{ manutencao_script_file }}"
+          - "✅ Backup do script anterior mantido"
+          - ""
+          - "📌 Para usar o novo script:"
+          - "   {{ manutencao_script_path }}/{{ manutencao_script_file }} start \"Mensagem\""
+          - "   {{ manutencao_script_path }}/{{ manutencao_script_file }} stop"
+          - "   {{ manutencao_script_path }}/{{ manutencao_script_file }} status"

@@ -1,0 +1,5 @@
+---
+- name: restart mdatp
+  systemd:
+    name: mdatp
+    state: restarted

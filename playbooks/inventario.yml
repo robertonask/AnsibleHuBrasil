@@ -1,0 +1,79 @@
+---
+- name: Gerar relatório de inventário LOCALMENTE
+  hosts: all
+  gather_facts: yes
+  vars:
+    relatorio_path: "/home/rnask/Trab/Ansible/ansible/relatorios/inventarioServidoresHUs.csv"
+    
+  tasks:
+    - name: Garantir diretório relatorios local
+      file:
+        path: "/home/rnask/Trab/Ansible/ansible/relatorios"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: true
+
+    - name: Coletar informações de cada servidor
+      set_fact:
+        linha_csv: "\"{{ ansible_hostname }}\";\"{{ ansible_default_ipv4.address | default('N/A') }}\";\"{{ ansible_distribution }}\";\"{{ ansible_distribution_version }}\";\"{{ ansible_date_time.date }}\";\"{{ wildfly_ver.stdout | default('nao_instalado') }}\";\"{{ apache_ver.stdout | default('nao_instalado') }}\";\"{{ postgres_ver.stdout | default('nao_instalado') }}\""
+      vars:
+        wildfly_ver: "{{ wildfly_version.results | selectattr('invocation.module_args.name', 'equalto', inventory_hostname) | map(attribute='stdout') | first | default('nao_instalado') }}"
+
+    - name: Coletar versão do Wildfly
+      shell: |
+        if [ -d /opt/wildfly ]; then
+          if [ -f /opt/wildfly/version.txt ]; then
+            grep -oP 'version>\K[^<]+' /opt/wildfly/version.txt 2>/dev/null || echo "instalado_sem_versao"
+          else
+            echo "instalado_sem_versao"
+          fi
+        elif [ -d /opt/jboss ]; then
+          echo "jboss_instalado"
+        else
+          echo "nao_instalado"
+        fi
+      register: wildfly_version
+      ignore_errors: yes
+
+    - name: Coletar versão do Apache
+      shell: |
+        if command -v apache2 &> /dev/null; then
+          apache2 -v 2>/dev/null | head -1 | grep -oP 'Apache/\K[0-9.]+' || echo "instalado_sem_versao"
+        elif command -v httpd &> /dev/null; then
+          httpd -v 2>/dev/null | head -1 | grep -oP 'Apache/\K[0-9.]+' || echo "instalado_sem_versao"
+        else
+          echo "nao_instalado"
+        fi
+      register: apache_version
+      ignore_errors: yes
+
+    - name: Coletar versão do PostgreSQL
+      shell: |
+        if command -v psql &> /dev/null; then
+          psql --version 2>/dev/null | grep -oP '(?<=psql \(PostgreSQL\) )\d+\.\d+' || echo "instalado_sem_versao"
+        else
+          echo "nao_instalado"
+        fi
+      register: postgres_version
+      ignore_errors: yes
+
+    - name: Criar arquivo CSV com cabeçalho (local)
+      copy:
+        content: "HOSTNAME;IP;DISTRIBUICAO;VERSAO;DATA_CRIACAO;WILDFLY;APACHE;POSTGRESQL\n"
+        dest: "{{ relatorio_path }}"
+        force: yes
+      delegate_to: localhost
+      run_once: true
+
+    - name: Adicionar linha de cada servidor ao CSV local
+      lineinfile:
+        path: "{{ relatorio_path }}"
+        line: "\"{{ ansible_hostname }}\";\"{{ ansible_default_ipv4.address | default('N/A') }}\";\"{{ ansible_distribution }}\";\"{{ ansible_distribution_version }}\";\"{{ ansible_date_time.date }}\";\"{{ wildfly_version.stdout | default('nao_instalado') }}\";\"{{ apache_version.stdout | default('nao_instalado') }}\";\"{{ postgres_version.stdout | default('nao_instalado') }}\""
+        insertafter: EOF
+      delegate_to: localhost
+
+    - name: Exibir mensagem final
+      debug:
+        msg: "✅ Relatório gerado em: {{ relatorio_path }}"
+      run_once: true

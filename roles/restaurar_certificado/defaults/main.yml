@@ -1,0 +1,12 @@
+---
+apache_service: apache2
+
+cert_dir: /etc/apache2/certs
+
+backup_dir: /etc/apache2/certs/backup
+
+cert_file: "{{ cert_dir }}/wildcardaghu.crt"
+key_file: "{{ cert_dir }}/wildcardaghu.key"
+chain_file: "{{ cert_dir }}/wildcardaghu.pem"
+
+apache_vhost: /etc/apache2/sites-available/aghu.conf

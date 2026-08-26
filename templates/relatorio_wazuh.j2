@@ -1,0 +1,20 @@
+===============================================================================
+RELATÓRIO DE INSTALAÇÃO DO WAZUH AGENT
+Executado em: {{ lookup('pipe', 'date "+%Y-%m-%d %H:%M:%S"') }}
+===============================================================================
+
+{% for host in groups['all'] %}
+{% if hostvars[host]['wazuh_status'] is defined %}
+[Host]: {{ host }}
+- Status: {{ hostvars[host]['wazuh_status'] }}
+- Debian Versão: {{ hostvars[host]['ansible_distribution_major_version'] | default('N/A') }}
+- Mensagem: {{ hostvars[host]['wazuh_msg'] }}
+-------------------------------------------------------------------------------
+{% else %}
+[Host]: {{ host }}
+- Status: FALHA
+- Mensagem: O host não pôde ser contactado ou falhou antes da execução das tasks.
+-------------------------------------------------------------------------------
+{% endif %}
+{% endfor %}
+

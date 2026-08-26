@@ -1,0 +1,300 @@
+---
+###############################################################################
+# Validação de SO suportado
+###############################################################################
+
+- name: Validar distribuição suportada
+  fail:
+    msg: >
+      Sistema não suportado pelo Microsoft Defender:
+      {{ ansible_distribution }}
+      {{ ansible_distribution_version }}
+  when:
+    - ansible_distribution not in ["Debian", "Ubuntu"]
+
+- name: Validar versão Debian suportada
+  fail:
+    msg: >
+      Debian {{ ansible_distribution_version }}
+      não suportado pelo Microsoft Defender.
+      Requer Debian 10 ou superior.
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_major_version | int < 10
+
+###############################################################################
+# Variáveis dinâmicas de distribuição
+###############################################################################
+
+- name: Definir release Microsoft Repo
+  set_fact:
+    ms_repo_release: "{{ ansible_distribution_major_version }}"
+    ms_repo_codename: "{{ ansible_distribution_release }}"
+
+###############################################################################
+# Dependências
+###############################################################################
+
+- name: Instalar dependências
+  apt:
+    name:
+      - curl
+      - gnupg
+      - apt-transport-https
+      - unzip
+      - python3
+    state: present
+    update_cache: yes
+  tags:
+    - defender
+    - install
+
+###############################################################################
+# Repositório Microsoft
+###############################################################################
+
+- name: Baixar chave Microsoft
+  get_url:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    dest: /tmp/microsoft.asc
+    mode: '0644'
+  tags:
+    - defender
+    - repo
+
+- name: Converter chave para gpg
+  shell: |
+    gpg --dearmor < /tmp/microsoft.asc > /usr/share/keyrings/microsoft-prod.gpg
+  args:
+    creates: /usr/share/keyrings/microsoft-prod.gpg
+  tags:
+    - defender
+    - repo
+
+- name: Adicionar repositório Microsoft Defender
+  copy:
+    dest: /etc/apt/sources.list.d/microsoft-prod.list
+    mode: '0644'
+    content: |
+      deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/{{ ansible_distribution | lower }}/{{ ms_repo_release }}/prod {{ ms_repo_codename }} main
+  tags:
+    - defender
+    - repo
+
+- name: Atualizar cache apt
+  apt:
+    update_cache: yes
+  tags:
+    - defender
+    - repo
+
+###############################################################################
+# Instalação Defender
+###############################################################################
+
+- name: Instalar Microsoft Defender
+  apt:
+    name: mdatp
+    state: latest
+  tags:
+    - defender
+    - install
+
+###############################################################################
+# Onboarding
+###############################################################################
+
+- name: Copiar onboarding package
+  copy:
+    src: GatewayWindowsDefenderATPOnboardingPackage1.zip
+    dest: /tmp/defender.zip
+    mode: '0644'
+  tags:
+    - defender
+    - onboarding
+
+- name: Criar diretório temporário
+  file:
+    path: /tmp/defender_onboarding
+    state: directory
+    mode: '0755'
+  tags:
+    - defender
+    - onboarding
+
+- name: Extrair onboarding package
+  unarchive:
+    src: /tmp/defender.zip
+    dest: /tmp/defender_onboarding
+    remote_src: yes
+  tags:
+    - defender
+    - onboarding
+
+- name: Encontrar script onboarding
+  find:
+    paths: /tmp/defender_onboarding
+    patterns: "*.py"
+  register: onboarding_script
+  tags:
+    - defender
+    - onboarding
+
+- name: Verificar status atual
+  shell: mdatp health --field licensed
+  register: defender_licensed
+  failed_when: false
+  changed_when: false
+  tags:
+    - defender
+    - onboarding
+
+- name: Executar onboarding
+  command: python3 {{ onboarding_script.files[0].path }}
+  when:
+    - onboarding_script.matched > 0
+    - "'true' not in defender_licensed.stdout"
+  tags:
+    - defender
+    - onboarding
+
+###############################################################################
+# Proxy
+###############################################################################
+
+- name: Configurar proxy
+  command: >
+    mdatp config proxy set --value {{ mdatp_proxy }}
+  when: mdatp_proxy != ""
+  tags:
+    - defender
+    - proxy
+
+###############################################################################
+# Exclusões
+###############################################################################
+
+- name: Listar exclusões atuais
+  shell: mdatp exclusion folder list
+  register: exclusion_list
+  changed_when: false
+  failed_when: false
+  tags:
+    - defender
+    - exclusions
+
+- name: Adicionar exclusões
+  command: >
+    mdatp exclusion folder add --path {{ item }}
+  loop: "{{ mdatp_exclusions }}"
+  register: exclusion_add
+  failed_when: >
+    exclusion_add.rc != 0 and
+    'New setting value is the same as the current value'
+    not in exclusion_add.stdout
+  changed_when: >
+    'Configuration not updated'
+    not in exclusion_add.stdout
+  tags:
+    - defender
+    - exclusions
+
+###############################################################################
+# Realtime Protection
+###############################################################################
+
+- name: Verificar realtime protection
+  shell: mdatp health --field real_time_protection_enabled
+  register: rtp_status
+  changed_when: false
+  failed_when: false
+  tags:
+    - defender
+    - realtime
+
+- name: Ativar proteção realtime
+  command: >
+    mdatp config real-time-protection --value enabled
+  when: "'true' not in rtp_status.stdout"
+  tags:
+    - defender
+    - realtime
+
+###############################################################################
+# Serviço
+###############################################################################
+
+- name: Reiniciar serviço
+  systemd:
+    name: mdatp
+    state: restarted
+    enabled: yes
+  tags:
+    - defender
+    - service
+
+- name: Esperar daemon subir
+  pause:
+    seconds: 30
+  tags:
+    - defender
+    - service
+
+###############################################################################
+# Healthcheck
+###############################################################################
+
+- name: Aguardar socket responder
+  shell: mdatp health
+  register: defender_health
+  retries: 10
+  delay: 15
+  until: defender_health.rc == 0
+  changed_when: false
+  failed_when: false
+  tags:
+    - defender
+    - validation
+
+- name: Connectivity test
+  shell: mdatp connectivity test
+  register: connectivity_test
+  changed_when: false
+  failed_when: false
+  tags:
+    - defender
+    - validation
+
+###############################################################################
+# Informações finais
+###############################################################################
+
+- name: Mostrar connectivity test
+  debug:
+    var: connectivity_test.stdout_lines
+  tags:
+    - defender
+    - validation
+
+- name: Mostrar health
+  debug:
+    var: defender_health.stdout_lines
+  tags:
+    - defender
+    - validation
+
+- name: Verificar subsystem realtime
+  shell: mdatp health --field real_time_protection_subsystem
+  register: subsystem_status
+  changed_when: false
+  failed_when: false
+  tags:
+    - defender
+    - validation
+
+- name: Mostrar subsystem
+  debug:
+    var: subsystem_status.stdout_lines
+  tags:
+    - defender
+    - validation

@@ -1,0 +1,378 @@
+#!/bin/bash
+############################################################
+#                MANUTENÇÃO AGHU - VERSÃO FINAL            #
+#           (Com página HTML personalizada)                #
+############################################################
+
+# VARIAVEIS
+LCK_FILE="/tmp/aghu-jk-manutencao.lck"
+VHOST_FILE="/etc/apache2/sites-available/aghu.conf"
+BACKUP_VHOST="/etc/apache2/sites-available/aghu.conf.maintenance.bak"
+MAINTENANCE_HTML="/var/www/html/maintenance.html"
+
+# FUNCOES
+manu_testa() {
+    [ -f "$LCK_FILE" ]
+}
+
+manu_create_maintenance_html() {
+    local message="${2:-O AGHU está temporariamente indisponível para manutenção programada.}"
+    
+    cat > "$MAINTENANCE_HTML" << 'EOF'
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema em Manutenção - AGHU</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: fadeIn 0.6s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        h1 {
+            color: #d9534f;
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .message {
+            color: #555;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 5px;
+        }
+        
+        .info p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .status {
+            display: inline-block;
+            background: #d9534f;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔧</div>
+        <div class="status">MANUTENÇÃO PROGRAMADA</div>
+        <h1>Sistema Indisponível</h1>
+        <div class="message">
+            __MESSAGE__
+        </div>
+        <div class="info">
+            <p>📅 Data: __DATE__</p>
+            <p>⏰ Horário: __TIME__</p>
+            <p>👨‍💻 Equipe de TI</p>
+        </div>
+        <div class="footer">
+            <p>AGHU - Sistema de Gestão Hospitalar</p>
+            <p>Desculpe pelo transtorno. Estamos trabalhando para melhorar o sistema.</p>
+        </div>
+    </div>
+</body>
+</html>
+EOF
+    
+    sed -i "s|__MESSAGE__|$message|g" "$MAINTENANCE_HTML"
+    sed -i "s|__DATE__|$(date '+%d/%m/%Y')|g" "$MAINTENANCE_HTML"
+    sed -i "s|__TIME__|$(date '+%H:%M:%S')|g" "$MAINTENANCE_HTML"
+    chmod 644 "$MAINTENANCE_HTML"
+    chown www-data:www-data "$MAINTENANCE_HTML"
+}
+
+manu_enable_maintenance() {
+    echo -e "📝 Configurando manutenção no Apache..."
+    
+    # Criar página HTML personalizada
+    manu_create_maintenance_html "$@"
+    
+    # Backup do VirtualHost
+    if [ ! -f "$BACKUP_VHOST" ]; then
+        cp "$VHOST_FILE" "$BACKUP_VHOST"
+        echo -e "✅ Backup criado: $BACKUP_VHOST"
+    fi
+    
+    # Verificar se já está configurado
+    if grep -q "# MAINTENANCE_MODE" "$VHOST_FILE"; then
+        echo -e "⚠️ Manutenção já está configurada"
+        return 0
+    fi
+    
+    # Criar arquivo temporário com a nova configuração
+    local temp_file=$(mktemp)
+    
+    # Adicionar configuração antes do VirtualHost ou dentro dele
+    awk -v maint_html="$MAINTENANCE_HTML" '
+    /<VirtualHost \*:443>/ {
+        print
+        print "    # MAINTENANCE_MODE - INICIO"
+        print "    ErrorDocument 503 /maintenance.html"
+        print "    RewriteEngine On"
+        print "    RewriteCond %{REQUEST_URI} !^/maintenance\\.html$"
+        print "    RewriteCond %{REQUEST_URI} !^/balancer-manager"
+        print "    RewriteRule ^.*$ /maintenance.html [L,R=503]"
+        print "    "
+        print "    # Desabilitando ProxyPass durante manutenção"
+        print "    # ProxyPass / balancer://omscluster/"
+        print "    # ProxyPassReverse / balancer://omscluster/"
+        print "    # MAINTENANCE_MODE - FIM"
+        print ""
+        next
+    }
+    /ProxyPass.*balancer:\/\/omscluster/ {
+        print "# " $0 "  # Desabilitado durante manutenção"
+        next
+    }
+    /ProxyPassReverse.*balancer:\/\/omscluster/ {
+        print "# " $0 "  # Desabilitado durante manutenção"
+        next
+    }
+    { print }
+    ' "$BACKUP_VHOST" > "$temp_file"
+    
+    # Substituir o arquivo original
+    cp "$temp_file" "$VHOST_FILE"
+    rm -f "$temp_file"
+    
+    echo -e "✅ Configuração de manutenção adicionada"
+}
+
+manu_disable_maintenance() {
+    echo -e "📝 Removendo manutenção..."
+    
+    # Restaurar backup
+    if [ -f "$BACKUP_VHOST" ]; then
+        cp "$BACKUP_VHOST" "$VHOST_FILE"
+        echo -e "✅ Backup restaurado"
+        rm -f "$BACKUP_VHOST"
+    else
+        # Se não tem backup, remover as linhas de manutenção
+        sed -i '/# MAINTENANCE_MODE - INICIO/,/# MAINTENANCE_MODE - FIM/d' "$VHOST_FILE"
+        sed -i 's/^# \(ProxyPass.*balancer:\/\/omscluster\)/\1/' "$VHOST_FILE"
+        sed -i 's/^# \(ProxyPassReverse.*balancer:\/\/omscluster\)/\1/' "$VHOST_FILE"
+        echo -e "✅ Configuração removida"
+    fi
+    
+    # Remover HTML
+    rm -f "$MAINTENANCE_HTML"
+    
+    echo -e "✅ Manutenção removida"
+}
+
+manu_reload_apache() {
+    echo -e "🔄 Recarregando Apache..."
+    
+    # Testar configuração
+    if apache2ctl configtest 2>&1 | grep -q "Syntax OK"; then
+        systemctl reload apache2
+        if [ $? -eq 0 ]; then
+            echo -e "✅ Apache recarregado com sucesso"
+            return 0
+        fi
+    fi
+    
+    echo -e "❌ Erro na configuração do Apache"
+    apache2ctl configtest
+    return 1
+}
+
+# MAIN
+case $1 in
+    start)
+        if manu_testa; then
+            echo -e "\033[01;31m❌ Manutenção já está ativa!\033[m"
+            exit 1
+        fi
+        
+        echo -e "\n=== 🔧 INICIANDO MANUTENÇÃO ==="
+        echo -e "⚠️  Em 5 segundos o sistema entrará em manutenção."
+        echo -e "Pressione Ctrl+C para cancelar...\n"
+        
+        for i in {5..1}; do
+            echo -ne "Iniciando em $i...\r"
+            sleep 1
+        done
+        echo -e "\n"
+        
+        manu_enable_maintenance "$@"
+        manu_reload_apache
+        
+        date "+%Y-%m-%d %H:%M:%S" > "$LCK_FILE"
+        
+        # Enviar para Zabbix
+        if command -v zabbix_sender >/dev/null 2>&1; then
+            zabbix_sender -c /etc/zabbix/zabbix_agent2.conf -k aghu.status.sender -o 1 >/dev/null 2>&1
+            echo -e "✅ Status enviado para Zabbix"
+        fi
+        
+        echo -e "\n\033[01;32m✅ MANUTENÇÃO ATIVADA COM SUCESSO!\033[m"
+        echo -e "\n📊 Teste de acesso:"
+        HTTP_CODE=$(curl -k -o /dev/null -s -w "%{http_code}" https://127.0.0.1/aghu/login.xhtml)
+        if [ "$HTTP_CODE" = "503" ]; then
+            echo -e "\033[01;32m   ✅ Página de manutenção ativa (HTTP $HTTP_CODE)\033[m"
+        else
+            echo -e "\033[01;33m   ⚠️ Resposta HTTP $HTTP_CODE (esperado 503)\033[m"
+        fi
+        ;;
+    
+    stop)
+        if ! manu_testa; then
+            echo -e "\033[01;31m❌ Manutenção não está ativa!\033[m"
+            exit 1
+        fi
+        
+        echo -e "\n=== 🔧 PARANDO MANUTENÇÃO ==="
+        manu_disable_maintenance
+        manu_reload_apache
+        
+        rm -f "$LCK_FILE"
+        
+        # Enviar para Zabbix
+        if command -v zabbix_sender >/dev/null 2>&1; then
+            zabbix_sender -c /etc/zabbix/zabbix_agent2.conf -k aghu.status.sender -o 0 >/dev/null 2>&1
+            echo -e "✅ Status enviado para Zabbix"
+        fi
+        
+        echo -e "\n\033[01;32m✅ MANUTENÇÃO DESATIVADA COM SUCESSO!\033[m"
+        echo -e "\n📊 Teste de acesso:"
+        HTTP_CODE=$(curl -k -o /dev/null -s -w "%{http_code}" https://127.0.0.1/aghu/login.xhtml)
+        if [ "$HTTP_CODE" = "200" ]; then
+            echo -e "\033[01;32m   ✅ Sistema online (HTTP $HTTP_CODE)\033[m"
+        else
+            echo -e "\033[01;33m   ⚠️ Resposta HTTP $HTTP_CODE (esperado 200)\033[m"
+        fi
+        ;;
+    
+    status)
+        echo -e "\n=== 📊 STATUS DO SISTEMA ==="
+        if manu_testa; then
+            echo -e "\033[01;31m✅ MANUTENÇÃO ATIVA\033[m"
+            echo -e "   Iniciada em: $(cat "$LCK_FILE" 2>/dev/null)"
+        else
+            echo -e "\033[01;32m❌ MANUTENÇÃO INATIVA\033[m"
+        fi
+        
+        echo -e "\n🌐 Resposta do servidor:"
+        curl -k -I https://127.0.0.1/aghu/login.xhtml 2>/dev/null | head -2
+        
+        echo -e "\n📁 Arquivos:"
+        echo -e "   Lock: $([ -f "$LCK_FILE" ] && echo "✅" || echo "❌")"
+        echo -e "   Backup: $([ -f "$BACKUP_VHOST" ] && echo "✅" || echo "❌")"
+        echo -e "   HTML: $([ -f "$MAINTENANCE_HTML" ] && echo "✅" || echo "❌")"
+        ;;
+    
+    debug)
+        echo -e "\n=== 🐛 DEBUG COMPLETO ==="
+        echo -e "📁 Arquivos de controle:"
+        echo -e "   Lock file: $LCK_FILE - $([ -f "$LCK_FILE" ] && echo "EXISTE" || echo "NÃO EXISTE")"
+        echo -e "   Backup: $BACKUP_VHOST - $([ -f "$BACKUP_VHOST" ] && echo "EXISTE" || echo "NÃO EXISTE")"
+        echo -e "   Maintenance HTML: $MAINTENANCE_HTML - $([ -f "$MAINTENANCE_HTML" ] && echo "EXISTE" || echo "NÃO EXISTE")"
+        
+        echo -e "\n🔧 Configuração atual do VirtualHost:"
+        if grep -q "# MAINTENANCE_MODE" "$VHOST_FILE"; then
+            echo -e "   ✅ Modo manutenção ATIVO"
+            grep -A 5 "# MAINTENANCE_MODE" "$VHOST_FILE" | head -10
+        else
+            echo -e "   ❌ Modo manutenção INATIVO"
+        fi
+        
+        echo -e "\n🌐 Testes HTTP:"
+        echo -e "   Página principal:"
+        curl -k -I https://127.0.0.1/aghu/login.xhtml 2>/dev/null | head -3
+        echo -e "\n   Página manutenção:"
+        curl -k -I https://127.0.0.1/maintenance.html 2>/dev/null | head -3
+        
+        echo -e "\n📝 Conteúdo do HTML:"
+        head -20 "$MAINTENANCE_HTML" 2>/dev/null || echo "   Arquivo não encontrado"
+        ;;
+    
+    *)
+        echo -e "\033[01;31mUso correto:\033[m"
+        echo -e ""
+        echo -e "  \033[02;33m$0 start [\"mensagem personalizada\"]\033[m  - Ativar manutenção"
+        echo -e "  \033[02;33m$0 stop\033[m                                   - Desativar manutenção"
+        echo -e "  \033[02;33m$0 status\033[m                                 - Verificar status"
+        echo -e "  \033[02;33m$0 debug\033[m                                  - Diagnóstico completo"
+        echo -e ""
+        echo -e "Exemplos:"
+        echo -e "  $0 start \"Manutenção programada - Atualização do sistema\""
+        echo -e "  $0 stop"
+        echo -e "  $0 status"
+        exit 1
+        ;;
+esac
+
+exit 0
+

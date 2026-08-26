@@ -1,0 +1,266 @@
+===============================================================================
+RELATÓRIO DE INSTALAÇÃO DO WAZUH AGENT
+Executado em: 2026-07-30 11:20:58
+===============================================================================
+
+[Host]: cff-pvl-pg3
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno 97] Família de endereços sem suporte pelo protocolo>
+-------------------------------------------------------------------------------
+[Host]: hcgo-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hcgo-pvl-pg2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hcpr-pvl-pg2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hcufpe-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hcufu-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hdt-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huac-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huap-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huap-pvl-pg2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hufurg-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hugg-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hujbb-pvl-pg1
+- Status: FALHA
+- Mensagem: O host não pôde ser contactado ou falhou antes da execução das tasks.
+-------------------------------------------------------------------------------
+[Host]: hulw-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hulw-pvl-pg2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huol-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hupes-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hupes-pvl-pg2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: husm-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huufjf-pvl-pg1
+- Status: FALHA
+- Mensagem: O host não pôde ser contactado ou falhou antes da execução das tasks.
+-------------------------------------------------------------------------------
+[Host]: huufms-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huunifap-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huunifap-pvl-pg2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huwc-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huwc-pvl-pg2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: meac-pvl-pg1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: meac-pvl-pg2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.hcpr
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.hcuftm
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.hubfs
+- Status: FALHA
+- Mensagem: O host não pôde ser contactado ou falhou antes da execução das tasks.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.hujb
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.hujm
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: A later version is already installed
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.hupaa
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno 97] Address family not supported by protocol>
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.huufgd
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.mco
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-master.mejc
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hcufpe
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hcuftm
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hcufu
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hdt
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.huac
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hubfs
+- Status: FALHA
+- Mensagem: O host não pôde ser contactado ou falhou antes da execução das tasks.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hufurg
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hugg
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hujb
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hujbb
+- Status: FALHA
+- Mensagem: O host não pôde ser contactado ou falhou antes da execução das tasks.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hulw
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.huol
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.hupaa
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno 97] Address family not supported by protocol>
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.husm
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.huufms
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.mco
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: pv-postgresql-slave.mejc
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Instalado e iniciado com sucesso.
+-------------------------------------------------------------------------------
+

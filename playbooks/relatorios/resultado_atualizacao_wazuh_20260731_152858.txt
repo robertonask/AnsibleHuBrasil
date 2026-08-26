@@ -1,0 +1,165 @@
+===============================================================================
+RELATÓRIO DE INSTALAÇÃO DO WAZUH AGENT
+Executado em: 2026-07-31 15:28:58
+===============================================================================
+
+[Host]: hcpr-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hcpr-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huab-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: huab-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: hucff-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hucff-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hupaa-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: hupaa-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: huufgd-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: huufgd-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: huufjf-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: huufjf-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: huufrr-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: huufrr-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: ipp-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: ipp-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: meufrj-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: meufrj-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Could not detect a supported package manager from the following list: ['apt'], or the required Python library is not installed. Check warnings for details.
+-------------------------------------------------------------------------------
+[Host]: ufs-hvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: ufs-pvl-postgresql1
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: ufs-pvl-postgresql2
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: cat-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: cat-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: ufsj-hvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: ufsj-pvl-postgresql1
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: ufsj-pvl-postgresql2
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: hcufmg-pv-postgresql-master
+- Status: SUCESSO
+- Debian Versão: 11
+- Mensagem: Atualizado para a versão 4.11.1-1 e reiniciado com sucesso.
+-------------------------------------------------------------------------------
+[Host]: hcufmg-pv-postgresql-slave
+- Status: FALHA
+- Mensagem: O host não pôde ser contactado ou falhou antes da execução das tasks.
+-------------------------------------------------------------------------------
+[Host]: hewab-pv-postgresql-master
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno -3] Temporary failure in name resolution>
+-------------------------------------------------------------------------------
+[Host]: hewab-pv-postgresql-slave
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: Request failed: <urlopen error [Errno -3] Temporary failure in name resolution>
+-------------------------------------------------------------------------------
+[Host]: hupest-pv-postgresql-master
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+[Host]: hupest-pv-postgresql-slave
+- Status: FALHA
+- Debian Versão: 11
+- Mensagem: O Wazuh Agent não está instalado neste host. Use o playbook de instalação.
+-------------------------------------------------------------------------------
+

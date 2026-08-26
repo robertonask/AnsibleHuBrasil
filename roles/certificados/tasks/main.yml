@@ -1,0 +1,205 @@
+---
+- block:
+
+    - name: Criar diretório de backup com timestamp
+      set_fact:
+        backup_dir: "/etc/apache2/certs/backup_{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':','') }}"
+
+    - name: Criar diretório de backup
+      file:
+        path: "{{ backup_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Backup wildcardaghu.crt
+      copy:
+        src: "{{ cert_file }}"
+        dest: "{{ backup_dir }}/wildcardaghu.crt"
+        remote_src: yes
+
+    - name: Backup wildcardaghu.key
+      copy:
+        src: "{{ key_file }}"
+        dest: "{{ backup_dir }}/wildcardaghu.key"
+        remote_src: yes
+
+    - name: Backup wildcardaghu.pem
+      copy:
+        src: "{{ chain_file }}"
+        dest: "{{ backup_dir }}/wildcardaghu.pem"
+        remote_src: yes
+
+    - name: Backup aghu.conf
+      copy:
+        src: "{{ apache_vhost }}"
+        dest: "{{ backup_dir }}/aghu.conf"
+        remote_src: yes
+
+    - name: Copiar arquivo PFX
+      copy:
+        src: "{{ pfx_file }}"
+        dest: "{{ pfx_remote }}"
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Extrair certificado
+      command: >
+        openssl pkcs12
+        -in {{ pfx_remote }}
+        -clcerts
+        -nokeys
+        -out {{ cert_file }}
+        -passin pass:{{ pfx_password }}
+
+    - name: Extrair chave
+      command: >
+        openssl pkcs12
+        -in {{ pfx_remote }}
+        -nocerts
+        -nodes
+        -out {{ key_file }}
+        -passin pass:{{ pfx_password }}
+
+    - name: Extrair cadeia
+      command: >
+        openssl pkcs12
+        -in {{ pfx_remote }}
+        -cacerts
+        -nokeys
+        -out {{ chain_file }}
+        -passin pass:{{ pfx_password }}
+
+    - name: Permissão chave
+      file:
+        path: "{{ key_file }}"
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Permissão certificados
+      file:
+        path: "{{ item }}"
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - "{{ cert_file }}"
+        - "{{ chain_file }}"
+
+    - name: Ler certificado instalado
+      command: >
+        openssl x509 -in {{ cert_file }} -noout -subject -dates -ext subjectAltName
+      register: cert_info
+      changed_when: false
+
+    - name: Exibir certificado instalado
+      debug:
+        var: cert_info.stdout_lines
+
+    - name: Garantir que o certificado é wildcard AGHU
+      fail:
+        msg: |
+          Certificado inválido.
+
+          Esperado:
+            DNS:*.aghu.ebserh.gov.br
+
+          Encontrado:
+          {{ cert_info.stdout }}
+      when: "'DNS:*.aghu.ebserh.gov.br' not in cert_info.stdout"
+
+    - name: Validar configuração Apache
+      command: apachectl configtest
+      register: apache_test
+      changed_when: false
+      failed_when: false
+
+    - name: Falhar caso configuração Apache seja inválida
+      fail:
+        msg: |
+          Configuração inválida do Apache.
+
+          STDOUT:
+          {{ apache_test.stdout }}
+
+          STDERR:
+          {{ apache_test.stderr }}
+      when: apache_test.rc != 0
+
+    - name: Reiniciar Apache
+      service:
+        name: "{{ apache_service }}"
+        state: restarted
+
+    - name: Validar certificado servido pelo Apache
+      shell: |
+        openssl s_client \
+          -connect 127.0.0.1:443 \
+          -servername {{ apache_servername | default('aghu.ebserh.gov.br') }} </dev/null 2>/dev/null |
+        openssl x509 -noout -subject -dates -ext subjectAltName
+      register: apache_cert
+      changed_when: false
+
+    - name: Exibir certificado servido pelo Apache
+      debug:
+        var: apache_cert.stdout_lines
+
+    - name: Garantir que Apache está servindo wildcard AGHU
+      fail:
+        msg: |
+          Apache reiniciou, porém não está servindo o wildcard esperado.
+
+          Esperado:
+            DNS:*.aghu.ebserh.gov.br
+
+          Encontrado:
+          {{ apache_cert.stdout }}
+      when: "'DNS:*.aghu.ebserh.gov.br' not in apache_cert.stdout"
+
+    - name: Mostrar validade
+      command: >
+        openssl x509 -enddate -noout -in {{ cert_file }}
+      register: validade
+      changed_when: false
+
+    - debug:
+        msg: "{{ inventory_hostname }} - {{ validade.stdout }}"
+
+  rescue:
+
+    - name: Restaurar certificado
+      copy:
+        src: "{{ backup_dir }}/wildcardaghu.crt"
+        dest: "{{ cert_file }}"
+        remote_src: yes
+
+    - name: Restaurar chave
+      copy:
+        src: "{{ backup_dir }}/wildcardaghu.key"
+        dest: "{{ key_file }}"
+        remote_src: yes
+
+    - name: Restaurar cadeia
+      copy:
+        src: "{{ backup_dir }}/wildcardaghu.pem"
+        dest: "{{ chain_file }}"
+        remote_src: yes
+
+    - name: Restaurar VirtualHost
+      copy:
+        src: "{{ backup_dir }}/aghu.conf"
+        dest: "{{ apache_vhost }}"
+        remote_src: yes
+
+    - name: Reiniciar Apache após rollback
+      service:
+        name: "{{ apache_service }}"
+        state: restarted
+
+    - fail:
+        msg: |
+          Atualização cancelada.
+          Rollback executado automaticamente.

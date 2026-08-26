@@ -1,0 +1,104 @@
+---
+- name: Criar usuário ansible automaticamente
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  vars:
+    ansible_user_name: ansible
+
+    # senha: 4ns1bl3huBrasil
+    ansible_user_password: "$6$ztWEAvU7zwsZGIVZ$4PdJKxbIuLpc1bhdAs4ITBDGqsewDE5Sh6qv81rBQ0zY/b2Wt0pgaBI5Uzi0hagTp9bV.D6vvD.FBHDqL0ed0/"
+
+  tasks:
+
+    ###########################################################################
+    # Mostrar informações do host
+    ###########################################################################
+
+    - name: Mostrar distribuição
+      debug:
+        msg:
+          - "Host: {{ inventory_hostname }}"
+          - "SO: {{ ansible_distribution }}"
+          - "Versão: {{ ansible_distribution_version }}"
+          - "Kernel: {{ ansible_kernel }}"
+
+    ###########################################################################
+    # Ignorar sistemas não suportados
+    ###########################################################################
+
+    - name: Ignorar sistemas não suportados
+      meta: end_host
+      when:
+        - ansible_distribution != "Debian"
+
+    - name: Ignorar Debian antigos
+      meta: end_host
+      when:
+        - ansible_distribution == "Debian"
+        - ansible_distribution_major_version | int < 10
+
+    ###########################################################################
+    # Instalar sudo
+    ###########################################################################
+
+    - name: Garantir sudo instalado
+      apt:
+        name: sudo
+        state: present
+        update_cache: yes
+
+    ###########################################################################
+    # Criar usuário
+    ###########################################################################
+
+    - name: Criar usuário ansible
+      user:
+        name: "{{ ansible_user_name }}"
+        shell: /bin/bash
+        create_home: yes
+        groups: sudo
+        append: yes
+        password: "{{ ansible_user_password }}"
+        state: present
+
+    ###########################################################################
+    # Diretório SSH
+    ###########################################################################
+
+    - name: Garantir diretório .ssh
+      file:
+        path: "/home/{{ ansible_user_name }}/.ssh"
+        state: directory
+        owner: "{{ ansible_user_name }}"
+        group: "{{ ansible_user_name }}"
+        mode: '0700'
+
+    ###########################################################################
+    # Sudo sem senha
+    ###########################################################################
+
+    - name: Configurar sudo sem senha
+      copy:
+        dest: /etc/sudoers.d/99-ansible
+        content: |
+          ansible ALL=(ALL) NOPASSWD:ALL
+        owner: root
+        group: root
+        mode: '0440'
+        validate: 'visudo -cf %s'
+
+    ###########################################################################
+    # Validar usuário
+    ###########################################################################
+
+    - name: Validar usuário criado
+      shell: id {{ ansible_user_name }}
+      register: user_check
+      changed_when: false
+
+    - name: Mostrar resultado
+      debug:
+        var: user_check.stdout_lines
+

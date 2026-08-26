@@ -1,0 +1,221 @@
+---
+- name: ATUALIZAR CERTIFICADOS SSL APACHE - AGHU
+  hosts: huac-pvl-apr1
+  become: yes
+  gather_facts: yes
+  vars:
+    cert_dir: "/etc/apache2/certs"
+    backup_dir: "/etc/apache2/certs/backup_{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':', '') }}"
+    report_dir: "/home/rnask/Trab/Ansible/ansible/playbooks/relatorios"
+    report_file: "{{ report_dir }}/certificados_atualizados_{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':', '') }}.txt"
+    cert_source_dir: "{{ playbook_dir }}/../files/certificados/pem"
+
+  tasks:
+    - name: CRIAR DIRETÓRIO DE RELATÓRIOS
+      ansible.builtin.file:
+        path: "{{ report_dir }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: yes
+
+    - name: VERIFICAR ARQUIVOS DE CERTIFICADO LOCAIS
+      ansible.builtin.stat:
+        path: "{{ cert_source_dir }}/{{ item }}"
+      loop:
+        - cert.pem
+        - privkey.pem
+        - ca-bundle.pem
+        - fullchain.pem
+      register: local_certs
+      delegate_to: localhost
+      run_once: yes
+
+    - name: VALIDAR CERTIFICADOS LOCAIS
+      ansible.builtin.command:
+        cmd: "openssl x509 -in {{ cert_source_dir }}/cert.pem -noout -dates -subject -issuer"
+      register: local_cert_validation
+      delegate_to: localhost
+      run_once: yes
+      ignore_errors: yes
+
+    - name: INICIAR RELATÓRIO
+      ansible.builtin.copy:
+        content: |
+          ================================================================================
+          RELATÓRIO DE ATUALIZAÇÃO DE CERTIFICADOS SSL - AGHU
+          ================================================================================
+          Data: {{ ansible_date_time.date }}
+          Hora: {{ ansible_date_time.time }}
+          Servidor: {{ inventory_hostname }} ({{ ansible_default_ipv4.address }})
+          --------------------------------------------------------------------------------
+          
+          VALIDAÇÃO DOS CERTIFICADOS LOCAIS:
+          {% if local_cert_validation.stdout %}
+          {{ local_cert_validation.stdout }}
+          ✅ CERTIFICADO VÁLIDO
+          {% else %}
+          ❌ CERTIFICADO INVÁLIDO OU NÃO ENCONTRADO
+          {% endif %}
+          
+          --------------------------------------------------------------------------------
+        dest: "{{ report_file }}"
+        mode: '0644'
+      delegate_to: localhost
+      run_once: yes
+
+    - name: FAZER BACKUP DOS CERTIFICADOS ATUAIS
+      ansible.builtin.shell:
+        cmd: |
+          mkdir -p {{ backup_dir }}
+          cp -p {{ cert_dir }}/*.crt {{ cert_dir }}/*.key {{ cert_dir }}/*.pem {{ backup_dir }}/ 2>/dev/null || true
+          echo "✅ Backup realizado em: {{ backup_dir }}"
+          ls -la {{ backup_dir }} 2>/dev/null || echo "Nenhum arquivo para backup"
+      register: backup_result
+      ignore_errors: yes
+
+    - name: REGISTRAR BACKUP NO RELATÓRIO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          BACKUP DOS CERTIFICADOS ATUAIS:
+          {{ backup_result.stdout }}
+          --------------------------------------------------------------------------------
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+
+    - name: COPIAR NOVOS CERTIFICADOS
+      ansible.builtin.copy:
+        src: "{{ cert_source_dir }}/{{ item.src }}"
+        dest: "{{ cert_dir }}/{{ item.dest }}"
+        mode: "{{ '0600' if 'privkey' in item.src else '0644' }}"
+        owner: root
+        group: root
+        backup: yes
+      loop:
+        - { src: "cert.pem", dest: "wildcardaghu.crt" }
+        - { src: "privkey.pem", dest: "wildcardaghu.key" }
+        - { src: "ca-bundle.pem", dest: "wildcardaghu.pem" }
+      register: copy_result
+
+    - name: REGISTRAR CÓPIA NO RELATÓRIO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          NOVOS CERTIFICADOS INSTALADOS:
+          {% for result in copy_result.results %}
+          - {{ result.dest }}: {{ '✅ SUCESSO' if result.changed else 'ℹ️ SEM ALTERAÇÕES' }}
+          {% endfor %}
+          --------------------------------------------------------------------------------
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+
+    - name: VERIFICAR NOVO CERTIFICADO NO SERVIDOR
+      ansible.builtin.command:
+        cmd: "openssl x509 -in {{ cert_dir }}/wildcardaghu.crt -noout -dates -subject -issuer"
+      register: new_cert_info
+      ignore_errors: yes
+
+    - name: VERIFICAR CHAVE DO NOVO CERTIFICADO
+      ansible.builtin.shell:
+        cmd: |
+          cert_mod=$(openssl x509 -noout -modulus -in {{ cert_dir }}/wildcardaghu.crt | openssl md5)
+          key_mod=$(openssl rsa -noout -modulus -in {{ cert_dir }}/wildcardaghu.key | openssl md5)
+          if [ "$cert_mod" = "$key_mod" ]; then
+            echo "✅ OK - Chave corresponde ao certificado"
+          else
+            echo "❌ ERRO - Chave NÃO corresponde ao certificado"
+          fi
+      register: new_key_match
+      ignore_errors: yes
+
+    - name: ADICIONAR VALIDAÇÃO DO NOVO CERTIFICADO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          VALIDAÇÃO DO NOVO CERTIFICADO INSTALADO:
+          {{ new_cert_info.stdout | default('❌ ERRO: Não foi possível ler o certificado') }}
+          
+          VALIDAÇÃO CHAVE/CERTIFICADO:
+          {{ new_key_match.stdout | default('❌ ERRO: Não foi possível validar') }}
+          --------------------------------------------------------------------------------
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+
+    - name: TESTAR CONFIGURAÇÃO DO APACHE
+      ansible.builtin.command:
+        cmd: "apache2ctl configtest"
+      register: config_test
+      ignore_errors: yes
+
+    - name: REGISTRAR TESTE DE CONFIGURAÇÃO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          TESTE DE CONFIGURAÇÃO DO APACHE:
+          {% if config_test.rc == 0 %}
+          ✅ CONFIGURAÇÃO VÁLIDA
+          {{ config_test.stdout }}
+          {% else %}
+          ❌ CONFIGURAÇÃO INVÁLIDA
+          {{ config_test.stderr }}
+          {% endif %}
+          --------------------------------------------------------------------------------
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+
+    - name: RECARREGAR APACHE
+      ansible.builtin.systemd:
+        name: apache2
+        state: reloaded
+      when: config_test.rc == 0
+      register: apache_reload
+
+    - name: VERIFICAR STATUS DO APACHE
+      ansible.builtin.systemd:
+        name: apache2
+      register: apache_status
+
+    - name: TESTAR CONEXÃO HTTPS
+      ansible.builtin.uri:
+        url: "https://aghu.huac-ufcg.ebserh"
+        validate_certs: no
+        timeout: 10
+      register: https_test
+      ignore_errors: yes
+      delegate_to: localhost
+
+    - name: FINALIZAR RELATÓRIO
+      ansible.builtin.lineinfile:
+        path: "{{ report_file }}"
+        line: |
+          RECARREGAMENTO DO APACHE:
+          {{ '✅ SUCESSO' if apache_reload.changed else 'ℹ️ NÃO FOI NECESSÁRIO' }}
+          
+          STATUS DO APACHE:
+          Active: {{ apache_status.status.ActiveState }}
+          SubState: {{ apache_status.status.SubState }}
+          
+          TESTE HTTPS:
+          Status: {{ '✅ SUCESSO (200)' if https_test.status == 200 else '⚠️ VERIFICAR MANUALMENTE' }}
+          Código HTTP: {{ https_test.status | default('N/A') }}
+          
+          ================================================================================
+          FIM DO RELATÓRIO
+          ================================================================================
+        insertafter: EOF
+      delegate_to: localhost
+      run_once: yes
+
+    - name: EXIBIR RESUMO
+      ansible.builtin.debug:
+        msg: |
+          ========================================
+          ✅ ATUALIZAÇÃO CONCLUÍDA!
+          📋 RELATÓRIO: {{ report_file }}
+          ========================================
+      run_once: yes
