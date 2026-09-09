@@ -1,0 +1,111 @@
+---
+- name: Verificar versões do Debian e gerar relatório CSV
+  hosts: all
+  become: yes
+  gather_facts: yes
+  vars:
+    relatorio_dir: "{{ playbook_dir }}/relatorios"
+    data_coleta: "{{ ansible_date_time.date }}"
+    arquivo_csv: "{{ relatorio_dir }}/debian_versoes_{{ data_coleta }}.csv"
+
+  tasks:
+    - name: Criar diretório de relatórios
+      ansible.builtin.file:
+        path: "{{ relatorio_dir }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Coletar informações do host
+      ansible.builtin.set_fact:
+        hostname: "{{ ansible_hostname }}"
+        ip_address: "{{ ansible_default_ipv4.address | default('N/A') }}"
+        versao_major: "{{ ansible_distribution_major_version | int }}"
+        versao_completa: "{{ ansible_distribution_version }}"
+
+    - name: Mapear nome da versão atual
+      ansible.builtin.set_fact:
+        versao_atual_nome: |
+          {% if versao_completa.startswith('7') %}7 (Wheezy)
+          {% elif versao_completa.startswith('8') %}8 (Jessie)
+          {% elif versao_completa.startswith('9') %}9 (Stretch)
+          {% elif versao_completa.startswith('10') %}10 (Buster)
+          {% elif versao_completa.startswith('11') %}11 (Bullseye)
+          {% elif versao_completa.startswith('12') %}12 (Bookworm)
+          {% elif versao_completa.startswith('13') %}13 (Trixie)
+          {% else %}{{ versao_completa }}{% endif %}
+
+    - name: Atualizar cache APT
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+      ignore_errors: yes
+
+    - name: Verificar versão estável mais recente
+      ansible.builtin.shell:
+        cmd: apt-cache policy | grep -oP 'stable.*?release v=\K[0-9]+' | head -1
+      register: latest_stable
+      changed_when: false
+      failed_when: false
+      ignore_errors: yes
+
+    - name: Mapear nome da versão para atualizar
+      ansible.builtin.set_fact:
+        versao_para_atualizar: |
+          {% if latest_stable.stdout | default('') | int == 7 %}7 (Wheezy)
+          {% elif latest_stable.stdout | default('') | int == 8 %}8 (Jessie)
+          {% elif latest_stable.stdout | default('') | int == 9 %}9 (Stretch)
+          {% elif latest_stable.stdout | default('') | int == 10 %}10 (Buster)
+          {% elif latest_stable.stdout | default('') | int == 11 %}11 (Bullseye)
+          {% elif latest_stable.stdout | default('') | int == 12 %}12 (Bookworm)
+          {% elif latest_stable.stdout | default('') | int == 13 %}13 (Trixie)
+          {% else %}{{ latest_stable.stdout | default('N/A') }}{% endif %}
+
+    - name: Verificar se precisa atualizar
+      ansible.builtin.set_fact:
+        precisa_atualizar: "{{ 'SIM' if latest_stable.stdout | default('0') | int > versao_major else 'NAO' }}"
+
+    - name: Criar cabeçalho do CSV (apenas no primeiro host)
+      ansible.builtin.copy:
+        content: "hostname;ip;versao_atual_completa;versao_para_atualizar;data_coleta;precisa_atualizar\n"
+        dest: "{{ arquivo_csv }}"
+        mode: '0644'
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Adicionar linha do host ao CSV (uma linha por host)
+      ansible.builtin.lineinfile:
+        path: "{{ arquivo_csv }}"
+        line: "{{ hostname }};{{ ip_address }};{{ versao_atual_nome }};{{ versao_para_atualizar }};{{ data_coleta }};{{ precisa_atualizar }}"
+        create: yes
+        mode: '0644'
+        insertafter: EOF
+      delegate_to: localhost
+
+    - name: Exibir confirmação
+      ansible.builtin.debug:
+        msg: "✅ Linha adicionada: {{ hostname }};{{ ip_address }};{{ versao_atual_nome }};{{ versao_para_atualizar }};{{ data_coleta }};{{ precisa_atualizar }}"
+
+    - name: Mostrar conteúdo completo do CSV (após todos os hosts)
+      when: inventory_hostname == groups['all'][0]
+      ansible.builtin.shell:
+        cmd: cat {{ arquivo_csv }}
+      register: csv_content
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Exibir CSV gerado
+      when: inventory_hostname == groups['all'][0]
+      ansible.builtin.debug:
+        msg: |
+          ========================================
+          RELATÓRIO CSV GERADO COM SUCESSO!
+          ========================================
+          Arquivo: {{ arquivo_csv }}
+          
+          Conteúdo:
+          {{ csv_content.stdout }}
+          ========================================
+      run_once: yes

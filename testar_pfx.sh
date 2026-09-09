@@ -1,6 +1,7 @@
 #!/bin/bash
 
-PFX="roles/certificados/files/homolog-aghu.ebserh.gov.br.pfx"
+#PFX="roles/certificados/files/homolog-aghu.ebserh.gov.br.pfx"
+PFX="roles/certificados/files/aghu.ebserh.gov.br.pfx"
 
 # Verificar se o arquivo existe
 if [ ! -f "$PFX" ]; then

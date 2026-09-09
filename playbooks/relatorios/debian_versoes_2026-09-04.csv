@@ -1,0 +1,1486 @@
+hostname;ip;versao_atual_completa;versao_para_atualizar;data_coleta;precisa_atualizar
+hcgo-hvl-pg1;10.50.0.47;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcgo-ivl-apl1;10.50.0.32;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcgo-pvl-pg1;10.50.0.26;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcgo-pvl-pg2;10.50.0.49;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcgo-pvl-pg3;172.17.84.48;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcgo-pvl-apl1;10.50.0.27;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcgo-pvl-apl3;10.50.0.220;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcgo-pvl-prx1;10.50.0.36;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcgo-pvl-dck1;10.50.0.222;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-hvl-pg1;10.58.0.73;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-hvl-apl1;10.58.0.72;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-pvl-rnds1;10.58.1.61;13 (Trixie)
+;
+;2026-09-04;NAO
+hcpr-pvl-prt1;10.58.1.56;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-pvl-pg1;10.58.0.66;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-pvl-pg2;10.58.0.67;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-pvl-pg3;172.17.84.52;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-pvl-apl1;10.58.0.64;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-pvl-apl2;10.58.0.65;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-pvl-apl3;10.58.0.35;11 (Bullseye)
+;
+;2026-09-04;NAO
+hcpr-pvl-dck1;10.58.1.57;13 (Trixie)
+;
+;2026-09-04;NAO
+hcpr-pvl-prx1;10.58.0.206;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufmg-hvl-pg1;10.36.2.7;13 (Trixie)
+;
+;2026-09-04;NAO
+ufmg-hvl-apl1;10.36.2.5;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufmg-ivl-apl1;10.36.2.6;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufmg-pvl-apr1;10.36.2.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufmg-pvl-pg6;172.17.84.7;13 (Trixie)
+;
+;2026-09-04;NAO
+ufmg-pvl-pg4;10.36.2.27;13 (Trixie)
+;
+;2026-09-04;NAO
+ufmg-pvl-pg5;10.36.2.35;13 (Trixie)
+;
+;2026-09-04;NAO
+ufmg-pvl-apl1;10.36.2.30;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufmg-pvl-apl2;10.36.2.33;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufmg-pvl-apl3;10.36.2.39;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-hvl-pg1;10.34.0.63;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-hvl-apl1;10.34.0.64;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-ivl-apl1;10.34.0.60;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-pvl-pg3;172.17.84.5;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-pvl-pg1;10.34.0.58;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-pvl-pg2;10.34.0.92;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-pvl-apl1;10.34.0.61;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-pvl-apl2;10.34.0.62;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufpe-pvl-apl3;10.34.0.90;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-hvl-apl1;10.4.1.29;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-ivl-apl1;10.4.1.10;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-apr1;10.4.1.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-prt1;10.4.1.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-pg1;10.4.1.25;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-pg2;10.4.1.12;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-pg3;172.17.84.10;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-apl1;10.4.0.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-apl3;10.4.0.15;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-apl2;10.4.0.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+uftm-pvl-prx1;10.4.0.54;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-apr1;10.92.1.7;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-prt1;10.92.1.42;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-dck1;10.92.1.43;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-pg1;10.92.1.14;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-pg2;10.92.1.28;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-pg3;172.17.84.11;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-prx1;10.92.1.13;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-apl1;10.92.1.17;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-apl2;10.92.1.18;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufu-pvl-apl3;10.92.1.26;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-hvl-apl1;10.98.0.71;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-ivl-apl1;10.98.0.72;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-hvl-pg1;10.98.0.100;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-apr1;10.98.0.23;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-prt1;10.98.0.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-pg1;10.98.0.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-pg2;10.98.0.60;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-pg3;172.17.84.12;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-prx1;10.98.0.160;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-dck1;10.98.0.202;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-apl1;10.98.0.18;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-apl3;10.98.0.188;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-apl2;10.98.0.21;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-pac1;10.98.0.172;11 (Bullseye)
+;
+;2026-09-04;NAO
+hdt-pvl-lec1;10.98.0.171;12 (Bookworm)
+;
+;2026-09-04;NAO
+hdt-pvl-rnds1;10.98.0.183;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-apr1;10.100.1.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-hvl-apl1;10.100.1.15;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-prt1;10.100.1.60;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-pg1;10.100.1.17;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-pg2;10.100.1.45;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-dck1;10.100.1.61;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-pg3;172.17.84.13;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-prx1;10.100.1.27;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-apl1;10.100.1.42;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-apl2;10.100.1.43;11 (Bullseye)
+;
+;2026-09-04;NAO
+pel-pvl-apl3;10.100.1.23;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-hvl-pg1;10.44.2.183;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-hvl-apl1;10.44.2.187;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-pvl-apr1;10.44.2.180;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-pvl-prt1;10.44.2.173;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-pvl-dck1;10.44.2.201;11 (Bullseye)
+;
+;2026-09-04;NAO
+hewab-pvl-postgresql3;172.17.84.51;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-pvl-pg1;10.44.2.176;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-pvl-pg2;10.44.2.47;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-pvl-apl1;10.44.2.188;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-apl1;10.8.3.106;11 (Bullseye)
+;
+;2026-09-04;NAO
+vasf-pvl-apl3;10.44.2.191;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-apl2;10.8.3.110;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-apl3;10.8.3.99;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-apr1;10.8.3.111;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-pg2;10.8.3.98;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-pg1;10.8.3.105;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-pg3;172.17.84.49;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-prx1;10.8.3.123;11 (Bullseye)
+;
+;2026-09-04;NAO
+hrl-pvl-dck1;10.8.1.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-hvl-pg1;10.30.2.15;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-hvl-apl1;10.30.2.24;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-ivl-apl1;10.30.2.25;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-apr1;10.30.2.60;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-prt1;10.30.2.239;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-pg1;10.30.2.30;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-pg2;10.30.2.91;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-pg3;172.17.84.17;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-apl1;10.30.2.22;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-apl2;10.30.2.31;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-apl3;10.30.2.92;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-prx1;10.30.2.174;11 (Bullseye)
+;
+;2026-09-04;NAO
+huab-pvl-dck1;10.30.2.241;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-hvl-apl1;10.64.2.162;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-hvl-pg1;10.64.2.163;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-ivl-apl1;10.64.2.164;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-pvl-apr1;10.64.2.33;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-pvl-pg1;10.64.2.38;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-pvl-pg3;172.17.84.18;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-pvl-pg2;10.64.2.42;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-pvl-apl1;10.64.2.36;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-pvl-apl2;10.64.2.161;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-pvl-apl3;10.64.2.43;11 (Bullseye)
+;
+;2026-09-04;NAO
+huac-pvl-dck1;10.64.2.196;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-hvl-pg1;10.88.1.245;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-hvl-apl1;10.88.1.243;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-ivl-apl1;10.88.1.123;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-pvl-pg1;10.88.1.246;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-pvl-pg3;172.17.84.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-pvl-pg2;10.88.1.242;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-pvl-apl1;10.88.1.124;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-pvl-apl2;10.88.1.125;11 (Bullseye)
+;
+;2026-09-04;NAO
+huap-pvl-apl3;10.88.1.126;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-prt1;10.80.235.15;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-pg2;10.80.235.11;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-pg1;10.80.235.9;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-pg3;172.17.85.188;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-apl1;10.80.235.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-apl2;10.80.235.10;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-apl3;10.80.235.16;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-prx1;10.80.235.7;11 (Bullseye)
+;
+;2026-09-04;NAO
+bfs-pvl-dck1;10.80.235.18;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-hvl-pg1;10.5.17.248;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-hvl-apl1;10.5.17.232;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-ivl-apl1;10.5.17.251;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-apr1;10.5.17.250;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-prt1;10.5.17.209;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-pg1;10.5.17.243;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-pg3;172.17.84.21;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-prx1;10.5.17.230;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-pg2;10.5.17.242;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-apl1;10.5.17.221;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-apl2;10.5.17.222;11 (Bullseye)
+;
+;2026-09-04;NAO
+cam-pvl-apl3;10.5.17.235;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-hvl-pg1;10.141.0.120;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-hvl-apl1;10.141.0.122;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-ivl-apl1;10.141.0.121;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-apr1;10.141.0.30;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-prt1;10.141.0.33;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-dck1;10.141.0.104;13 (Trixie)
+;
+;2026-09-04;NAO
+cff-pvl-pg1;10.141.0.34;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-pg2;10.141.0.112;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-prx1;10.141.0.45;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-pg3;172.17.84.87;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-apl1;10.141.0.36;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-apl2;10.141.0.37;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-apr1;10.132.129.29;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-hvl-pg1;10.132.128.61;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-pg1;10.132.128.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-prt1;10.132.129.18;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-pg2;10.132.129.6;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-pg3;172.17.85.120;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-apl1;10.132.129.14;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-apl2;10.132.129.4;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-apl3;10.132.129.10;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-prx1;10.132.128.13;11 (Bullseye)
+;
+;2026-09-04;NAO
+furg-pvl-dck1;10.132.129.13;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-hvl-pg1;10.62.0.45;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-ivl-apl1;10.62.0.42;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-apr1;10.62.0.157;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-prt1;10.62.0.46;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-prx1;10.62.0.250;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-pg3;172.17.84.23;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugg-pvl-dck1;10.62.0.202;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-pg1;10.62.0.105;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-pg2;10.62.0.154;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-apl1;10.62.0.106;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-apl2;10.62.0.151;11 (Bullseye)
+;
+;2026-09-04;NAO
+huse-pvl-apl3;10.62.0.152;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-hvl-pg1;10.53.2.214;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-hvl-apl1;10.53.2.210;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-ivl-apl2;10.53.2.211;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-apr1;10.53.2.200;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-prt1;10.53.2.203;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-dck1;10.53.2.154;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-pg3;172.17.84.24;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-pg1;10.53.2.212;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-pg2;10.53.2.213;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-prx1;10.53.2.12;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-apl1;10.53.2.206;11 (Bullseye)
+;
+;2026-09-04;NAO
+hugv-pvl-apl2;10.53.2.207;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-prt1;10.206.235.15;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-apr1;10.206.235.6;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-pg1;10.206.235.7;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-pg2;10.206.235.11;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-pg3;172.17.85.181;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-apl1;10.206.235.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-apl2;10.206.235.8;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-apl3;10.206.235.16;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-prx1;10.206.235.5;11 (Bullseye)
+;
+;2026-09-04;NAO
+jbb-pvl-dck1;10.206.235.18;13 (Trixie)
+;
+;2026-09-04;NAO
+hujb-hvl-pg1;10.66.1.12;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujb-hvl-apl1;10.66.1.10;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujb-ivl-apl1;10.66.1.11;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujb-pvl-postgresql3;172.17.84.25;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujb-pvl-pg1;10.66.1.6;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujb-pvl-apl1;10.66.1.13;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujb-pvl-apl2;10.66.1.14;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujb-pvl-apl3;10.66.1.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-hvl-apl1;10.24.17.112;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-ivl-apl1;10.24.17.140;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-apr1;10.24.17.120;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-prt1;10.24.17.119;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-dck1;10.24.18.200;13 (Trixie)
+;
+;2026-09-04;NAO
+hujm-pvl-pg1;10.24.17.121;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-pg2;10.24.17.206;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-pac1;10.24.18.114;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-pg3;172.17.84.27;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-prx1;10.24.17.132;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-apl1;10.24.17.129;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-apl2;10.24.17.130;11 (Bullseye)
+;
+;2026-09-04;NAO
+hujm-pvl-apl3;10.24.17.207;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-hvl-11apl1;172.17.85.152;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-tvl-11apl2;172.17.85.173;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-apr1;10.40.2.40;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-prt1;10.40.2.39;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-dck1;10.40.2.231;13 (Trixie)
+;
+;2026-09-04;NAO
+hulw-pvl-pg4;10.40.2.38;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-pg5;10.40.2.191;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-prx1;10.40.2.69;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-apl1;10.40.2.50;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-apl2;10.40.2.51;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-pg6;172.17.84.28;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-pvl-apl3;10.40.2.192;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-hvl-pg1;10.26.1.234;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-hvl-apl1;10.26.1.130;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-ivl-apl1;10.26.1.228;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-apr1;10.26.1.230;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-prt1;10.26.2.110;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-pg1;10.26.1.231;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-pg2;10.26.1.237;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-apl1;10.26.1.131;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-apl2;10.26.1.132;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-apl3;10.26.1.133;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-prx1;10.26.0.136;11 (Bullseye)
+;
+;2026-09-04;NAO
+huol-pvl-dck1;10.26.2.114;13 (Trixie)
+;
+;2026-09-04;NAO
+huol-pvl-lec1;10.26.2.107;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-hvl-pg1;10.46.0.79;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-apr1;10.46.0.101;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-prt1;10.46.0.173;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-dck1;10.46.0.174;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-pg1;10.46.0.73;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-pg2;10.46.0.84;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-pg3;172.17.84.30;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-prx1;10.46.0.99;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-apl1;10.46.0.104;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-apl2;10.46.0.105;11 (Bullseye)
+;
+;2026-09-04;NAO
+paa-pvl-apl3;10.46.0.108;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-hvl-apl1;10.14.0.74;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-hvl-pg1;10.14.0.52;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-ivl-apl1;10.14.0.55;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-apr1;10.14.0.81;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-prt1;10.14.0.151;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-pg1;10.14.0.80;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-pg3;172.17.84.31;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-pg2;10.14.0.88;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-prx1;10.14.0.110;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-dck1;10.14.0.152;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-apl1;10.14.0.100;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-apl3;10.14.0.86;11 (Bullseye)
+;
+;2026-09-04;NAO
+pes-pvl-apl2;10.14.0.99;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-hvl-pg1;10.94.61.162;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-hvl-apl1;10.94.61.160;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-ivl-apl1;10.94.61.161;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-pvl-apr1;10.94.61.155;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-pvl-pg3;172.17.84.55;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-pvl-pg1;10.94.61.156;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-pvl-pg2;10.94.61.158;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-pvl-apl1;10.94.61.154;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-pvl-apl2;10.94.61.9;11 (Bullseye)
+;
+;2026-09-04;NAO
+pest-pvl-apl3;10.94.61.159;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-hvl-pg1;10.60.1.21;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-hvl-apl1;10.60.1.15;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-ivl-apl1;10.60.1.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-apr1;10.60.1.9;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-prt1;10.60.1.57;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-pg1;10.60.1.14;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-pg2;10.60.1.27;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-pg3;172.17.84.44;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-apl1;10.60.1.24;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-apl2;10.60.1.25;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-apl3;10.60.1.13;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-prx1;10.60.1.12;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-pvl-dck1;10.60.1.58;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-hvl-pg1;10.60.1.21;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-hvl-apl1;10.60.1.15;11 (Bullseye)
+;
+;2026-09-04;NAO
+husm-ivl-apl1;10.60.1.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-apr1;10.18.0.27;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-pg1;10.18.0.30;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-pg2;10.18.0.115;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-pg3;172.17.84.34;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-apl1;10.18.0.80;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-apl2;10.18.0.81;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-apl3;10.18.0.116;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-prx1;10.18.0.123;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-pvl-dck1;10.18.0.234;13 (Trixie)
+;
+;2026-09-04;NAO
+ufgd-hvl-pg1;10.18.0.34;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-hvl-apl1;10.18.0.67;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufgd-ivl-apl1;10.18.0.113;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-hvl-pg1;10.48.210.215;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-hvl-apl1;10.48.210.214;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-ivl-apl1;10.48.210.213;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-apr1;10.48.210.209;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-prt2;10.48.210.221;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-pg1;10.48.210.203;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-pg2;10.48.210.204;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-pg3;172.17.84.35;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-prx1;10.48.210.217;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-apl1;10.48.210.205;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-apl2;10.48.210.206;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufjf-pvl-apl3;10.48.210.212;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-hvl-pg1;10.16.1.21;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-hvl-apl1;10.16.1.6;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-ivl-apl1;10.16.1.30;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-pvl-apr1;10.16.1.1;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-pvl-prt3;10.16.1.69;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-pvl-pg4;10.16.1.10;13 (Trixie)
+;
+;2026-09-04;NAO
+ufma-pvl-pg5;10.16.1.4;13 (Trixie)
+;
+;2026-09-04;NAO
+ufma-pvl-pg6;172.17.84.54;13 (Trixie)
+;
+;2026-09-04;NAO
+ufma-pvl-prx1;10.16.1.40;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-pvl-apl1;10.16.1.7;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-pvl-apl2;10.16.1.8;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufma-pvl-apl3;10.16.0.28;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-hvl-pg1;10.42.1.13;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-hvl-apl1;10.42.1.32;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-ivl-apl1;10.42.1.33;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-pvl-apr1;10.42.1.16;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-pvl-pg1;10.42.1.10;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-pvl-pg2;10.42.1.23;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-pvl-pg3;172.17.84.53;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-pvl-apl1;10.42.1.17;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-pvl-apl2;10.42.1.12;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-pvl-apl3;10.42.1.24;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufms-pvl-prx1;10.42.1.35;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufrr-hvl-pg1;10.72.0.29;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufrr-hvl-apl1;10.72.0.28;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufrr-pvl-apr1;10.72.0.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufrr-pvl-prt1;10.72.0.21;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufrr-pvl-pg1;10.72.0.22;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufrr-pvl-pg2;10.72.0.23;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufrr-pvl-pg3;172.17.84.90;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufrr-pvl-apl1;10.72.0.24;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-hvl-pg1;172.17.87.232;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-hvl-apl1;172.17.87.223;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-ivl-apl1;172.17.87.224;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-prt1;10.10.3.64;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-apr1;10.10.3.23;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-pg1;10.10.3.18;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-pg2;10.10.3.21;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-pg3;172.17.84.39;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-apl2;10.10.3.17;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-apl3;10.10.3.20;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-apl1;10.10.3.16;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-prx1;10.10.3.19;11 (Bullseye)
+;
+;2026-09-04;NAO
+fap-pvl-dck1;10.10.3.66;11 (Bullseye)
+;
+;2026-09-04;NAO
+huwc-pvl-pg3;172.17.84.40;11 (Bullseye)
+;
+;2026-09-04;NAO
+huwc-pvl-pg1;10.28.1.59;11 (Bullseye)
+;
+;2026-09-04;NAO
+huwc-pvl-pg2;10.28.1.43;11 (Bullseye)
+;
+;2026-09-04;NAO
+huwc-pvl-apl1;10.28.1.87;11 (Bullseye)
+;
+;2026-09-04;NAO
+huwc-pvl-apl2;10.28.1.88;11 (Bullseye)
+;
+;2026-09-04;NAO
+huwc-pvl-apl3;10.28.1.41;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-hvl-pg1;10.142.0.246;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-hvl-apl1;10.142.0.243;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-ivl-apl1;10.142.0.244;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-apr1;10.142.0.225;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-prt1;10.142.0.234;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-pac1;10.142.0.224;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-pg1;10.142.0.200;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-pg2;10.142.0.245;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-pg3;172.17.84.89;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-prx1;10.142.0.236;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-apl1;10.142.0.241;11 (Bullseye)
+;
+;2026-09-04;NAO
+ipp-pvl-apl2;10.142.0.242;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-apr1;10.31.0.85;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-prt1;10.31.4.26;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-pg1;10.31.0.90;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-pg2;10.31.1.2;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-pg3;172.17.84.41;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-apl1;10.31.0.78;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-apl2;10.31.0.79;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-apl3;10.31.1.3;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-prx1;10.31.0.117;11 (Bullseye)
+;
+;2026-09-04;NAO
+mco-pvl-dck1;10.31.4.27;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-apr1;10.28.1.80;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-prt1;10.28.1.224;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-pg1;10.28.1.78;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-pg2;10.28.1.93;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-pg3;172.17.84.42;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-apl1;10.28.1.89;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-apl2;10.28.1.90;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-apl3;10.28.1.91;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-prx1;10.28.1.250;11 (Bullseye)
+;
+;2026-09-04;NAO
+meac-pvl-dck1;10.28.1.225;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-hvl-pg1;10.12.1.68;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-hvl-apl1;10.12.1.51;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-ivl-apl1;10.12.1.66;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-apr1;10.12.1.50;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-prt1;10.12.2.23;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-pg1;10.12.1.75;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-pg2;10.12.1.175;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-pg3;172.17.84.43;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-apl1;10.12.1.55;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-apl2;10.12.1.56;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-apl3;10.12.1.57;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-prx1;10.12.1.130;11 (Bullseye)
+;
+;2026-09-04;NAO
+mejc-pvl-dck1;10.12.2.25;11 (Bullseye)
+;
+;2026-09-04;NAO
+merj-hvl-pg1;10.143.0.29;11 (Bullseye)
+;
+;2026-09-04;NAO
+merj-hvl-apl1;10.143.0.28;11 (Bullseye)
+;
+;2026-09-04;NAO
+meu-pvl-apr1;10.143.0.22;11 (Bullseye)
+;
+;2026-09-04;NAO
+meu-pvl-pg1;10.143.0.24;11 (Bullseye)
+;
+;2026-09-04;NAO
+meu-pvl-prt1;10.143.0.23;11 (Bullseye)
+;
+;2026-09-04;NAO
+meu-pvl-pg2;10.143.0.41;11 (Bullseye)
+;
+;2026-09-04;NAO
+meu-pvl-apl1;10.143.0.26;11 (Bullseye)
+;
+;2026-09-04;NAO
+meu-pvl-apl2;10.143.0.27;11 (Bullseye)
+;
+;2026-09-04;NAO
+meu-pvl-prx1;10.143.0.45;11 (Bullseye)
+;
+;2026-09-04;NAO
+meu-pvl-dck1;10.143.0.44;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-hvl-pg1;10.90.12.43;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-hvl-apl1;10.90.12.44;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-ivl-apl1;10.90.12.42;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-apr1;10.90.12.30;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-prt1;10.90.12.67;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-dck1;10.90.12.200;13 (Trixie)
+;
+;2026-09-04;NAO
+scar-pvl-pg1;10.90.12.40;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-pg2;10.90.12.52;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-pg3;172.17.84.14;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-prx1;10.90.12.65;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-apl1;10.90.12.47;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-apl2;10.90.12.48;11 (Bullseye)
+;
+;2026-09-04;NAO
+scar-pvl-apl3;10.90.12.53;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-hvl-pg1;10.20.17.16;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-hvl-apl1;10.20.17.22;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-ivl-apl1;10.20.17.28;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-prt1;10.20.17.69;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-dck1;10.20.17.200;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-pg1;10.20.17.12;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-pg2;10.20.17.38;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-pg3;172.17.84.32;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-prx1;10.20.17.90;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-apl1;10.20.17.31;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-apl2;10.20.17.32;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufs-pvl-apl3;10.20.17.39;11 (Bullseye)
+;
+;2026-09-04;NAO
+se-hvl-11pg1;172.17.87.235;11 (Bullseye)
+;
+;2026-09-04;NAO
+hulw-ivl-11apl1;172.17.85.183;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-prt1;10.65.0.115;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-pg1;10.65.0.125;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-pg2;10.65.0.126;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-pg3;172.17.85.196;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-apr1;10.65.0.106;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-apl1;10.65.0.107;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-apl2;10.65.0.108;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-apl3;10.65.0.109;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-prx1;10.65.0.117;11 (Bullseye)
+;
+;2026-09-04;NAO
+cat-pvl-dck1;10.65.0.116;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-hvl-pg1;10.33.0.40;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-dsw1;10.33.0.46;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-ivl-apl1;10.33.0.47;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-hvl-apl1;10.33.0.48;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-apr1;10.33.0.37;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-prt1;10.33.0.44;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-pg1;10.33.0.38;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-pg2;10.33.0.39;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-pg3;172.17.85.190;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-apl1;10.33.0.41;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-apl2;10.33.0.42;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-apl3;10.33.0.43;11 (Bullseye)
+;
+;2026-09-04;NAO
+ufsj-pvl-prx1;10.33.0.36;11 (Bullseye)
+;
+;2026-09-04;NAO
+sede-pvl-awx1;172.17.70.132;11 (Bullseye)
+;
+;2026-09-04;NAO
+cff-pvl-aplec1;10.141.0.118;12 (Bookworm)
+;
+;2026-09-04;NAO

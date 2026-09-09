@@ -3,15 +3,17 @@
 cert_dir: /etc/apache2/certs
 
 # Arquivo PFX no controlador Ansible (roles/certificados/files/)
-#pfx_file: aghu.ebserh.gov.br.pfx
-pfx_file: homolog-aghu.ebserh.gov.br.pfx
+pfx_file: aghu.ebserh.gov.br.pfx
+#pfx_file: homolog-aghu.ebserh.gov.br.pfx
 #pfx_file: teste-sbis.ebserh.gov.br.pfx
 
 # ============================================
 # SENHA DO CERTIFICADO PFX
 # ============================================
 # Adicione a senha do arquivo homolog-aghu.ebserh.gov.br.pfx
-pfx_password: "hubrasil@2026"
+#pfx_password: "hubrasil@2026"
+# Adicione a senha do arquivo aghu.ebserh.gov.br.pfx
+pfx_password: "Ebserh@123"
 
 # Destino do PFX no servidor
 pfx_remote: "{{ cert_dir }}/{{ pfx_file }}"
